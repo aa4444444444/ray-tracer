@@ -2,6 +2,7 @@
 #include "../header/point.h"
 #include "../header/vector.h"
 
+#include <Eigen/Dense>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>

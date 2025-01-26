@@ -1,8 +1,11 @@
 # Compiler
 CXX = g++
 
+# Eigen Library Location
+EIGEN = ../eigen-3.4.0
+
 # Compiler flags
-CXXFLAGS = -Wall -g
+CXXFLAGS = -Wall -g -I $(EIGEN)
 
 # Target executable
 TARGET = main
