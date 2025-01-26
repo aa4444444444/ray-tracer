@@ -1,2 +1,5 @@
 # All object files
 *.o
+
+# Don't add the exe
+*.exe
