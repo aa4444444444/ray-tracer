@@ -11,13 +11,13 @@ TARGET = main
 TARGET_DEL = main.exe
 
 # Source files
-SRCS = source/main.cpp source/color.cpp source/point.cpp
+SRCS = source/main.cpp source/color.cpp source/point.cpp source/vector.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
 
 # Default rule to build and run the executable
-all: $(TARGET) run
+all: $(TARGET)
 
 # Rule to link object files into the target executable
 $(TARGET): $(OBJS)
