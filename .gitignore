@@ -3,3 +3,6 @@
 
 # Don't add the exe
 *.exe
+
+# Don't need vscode stuff
+.vscode/*

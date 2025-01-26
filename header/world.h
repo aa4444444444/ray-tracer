@@ -8,6 +8,7 @@
 class World {
 public:
     World();
+    ~World();
     void addObject(Object* object);
     void spawnRay(Ray* ray);
 

@@ -8,4 +8,4 @@ Camera::Camera(float positionX, float positionY, float positionZ, float lookatX,
     m_up = new Vector(upX, upY, upZ);
 }
 
-void Camera::render(World* world) { }
+void Camera::render(World* world) { delete world; }

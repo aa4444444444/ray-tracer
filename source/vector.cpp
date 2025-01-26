@@ -1,44 +1,44 @@
 #include "../header/vector.h"
 #include <cmath>
 
+Vector::Vector(Eigen::Vector3d vec)
+{
+    m_vector = vec;
+    normalize();
+}
+
 Vector::Vector(float x, float y, float z)
 {
-    m_x = x;
-    m_y = y;
-    m_z = z;
+    m_vector = Eigen::Vector3d(x, y, z);
 
     // Automatically normalize all vectors when created
     normalize();
 }
 
-float Vector::getX() { return m_x; }
+Eigen::Vector3d Vector::getVector() { return m_vector; }
 
-float Vector::getY() { return m_y; }
-
-float Vector::getZ() { return m_z; }
-
-void Vector::setX(float x) { m_x = x; }
-
-void Vector::setY(float y) { m_y = y; }
-
-void Vector::setZ(float z) { m_z = z; }
+void Vector::setVector(Eigen::Vector3d vec) { m_vector = vec; }
 
 void Vector::normalize()
 {
     float mag = magnitude();
     if (mag != 0) {
-        m_x = m_x / mag;
-        m_y = m_y / mag;
-        m_z = m_z / mag;
+        m_vector.normalize();
     }
 }
 
-float Vector::magnitude() { return sqrt(m_x * m_x + m_y * m_y + m_z * m_z); }
+float Vector::magnitude() { return m_vector.norm(); }
 
-Vector Vector::cross(Vector v)
+Vector Vector::cross(Vector v) { return Vector(m_vector.cross(v.getVector())); }
+
+float Vector::dot(Vector v) { return m_vector.dot(v.getVector()); }
+
+void Vector::transform(Eigen::Matrix4d transMat)
 {
-    return Vector(
-        (m_y * v.getZ() - m_z * v.getY()), -1 * (m_x * v.getZ() - m_z * v.getX()), (m_x * v.getY() - m_y * v.getX()));
+    Eigen::Vector4d augmented(m_vector(0), m_vector(1), m_vector(2), 1);
+    Eigen::Vector4d result = transMat * augmented;
+    m_vector(0) = result(0) / result(3);
+    m_vector(1) = result(1) / result(3);
+    m_vector(2) = result(2) / result(3);
+    normalize();
 }
-
-float Vector::dot(Vector v) { return m_x * v.getX() + m_y * v.getY() + m_z * v.getZ(); }
