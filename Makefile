@@ -11,7 +11,7 @@ TARGET = main
 TARGET_DEL = main.exe
 
 # Source files
-SRCS = source/main.cpp source/color.cpp
+SRCS = source/main.cpp source/color.cpp source/point.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)

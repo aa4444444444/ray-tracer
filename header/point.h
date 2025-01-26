@@ -9,9 +9,9 @@ public:
     float getX();
     float getY();
     float getZ();
-    float setX(float x);
-    float setY(float y);
-    float setZ(float z);
+    void setX(float x);
+    void setY(float y);
+    void setZ(float z);
 
 private:
     float m_x;

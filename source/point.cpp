@@ -27,15 +27,15 @@ float Point::getZ()
 {
     return m_z;
 }
-float Point::setX(float x)
+void Point::setX(float x)
 {
     m_x = x;
 }
-float Point::setY(float y)
+void Point::setY(float y)
 {
     m_y = y;
 }
-float Point::setZ(float z)
+void Point::setZ(float z)
 {
     m_z = z;
 }
