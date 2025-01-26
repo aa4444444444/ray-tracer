@@ -16,7 +16,7 @@ TARGET_DEL = main.exe
 # Source files
 define SRCS 
 source/main.cpp source/color.cpp source/point.cpp source/vector.cpp 
-source/ray.cpp source/sphere.cpp source/world.cpp
+source/ray.cpp source/sphere.cpp source/world.cpp source/camera.cpp
 endef
 
 # Object files
