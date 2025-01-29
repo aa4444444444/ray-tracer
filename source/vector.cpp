@@ -29,6 +29,8 @@ void Vector::normalize()
 
 float Vector::magnitude() { return m_vector.norm(); }
 
+void Vector::scale(float scale) { m_vector = m_vector * scale; }
+
 Vector Vector::cross(Vector v) { return Vector(m_vector.cross(v.getVector())); }
 
 float Vector::dot(Vector v) { return m_vector.dot(v.getVector()); }

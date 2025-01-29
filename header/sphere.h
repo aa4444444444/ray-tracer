@@ -12,6 +12,7 @@ public:
     float getRadius();
     void setRadius(float r);
     Ray* intersect(Ray* ray) override;
+    void transform(Eigen::Matrix4d transMat) override;
 
 private:
     Point* m_center;

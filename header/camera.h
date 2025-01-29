@@ -9,6 +9,7 @@ class Camera {
 public:
     Camera(float positionX, float positionY, float positionZ, float lookatX, float lookatY, float lookatZ, float upX,
         float upY, float upZ);
+    ~Camera();
     void render(World* world);
 
 private:

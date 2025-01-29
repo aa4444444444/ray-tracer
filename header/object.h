@@ -7,6 +7,7 @@
 class Object {
 public:
     virtual Ray* intersect(Ray* ray) = 0;
+    virtual void transform(Eigen::Matrix4d transMat) = 0;
     virtual ~Object() {};
 
 private:

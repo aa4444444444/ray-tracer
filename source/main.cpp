@@ -14,11 +14,11 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    // Sphere* sphere = new Sphere(0.1, 0.2, 4, 1);
-    // World* world = new World();
-    // world->addObject(sphere);
-    // Camera* camera = new Camera(0, 0, 8, 0, 0, 0, 0, 1, 0);
-    // camera->render(world);
+    Sphere* sphere = new Sphere(0.1, 0.2, 4, 1);
+    World* world = new World();
+    world->addObject(sphere);
+    Camera* camera = new Camera(0, 0, 8, 0, 0, 0, 0, 1, 0);
+    camera->render(world);
 
     return 0;
 }

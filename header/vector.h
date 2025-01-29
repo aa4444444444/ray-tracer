@@ -13,6 +13,7 @@ public:
     float magnitude();
     Vector cross(Vector v);
     float dot(Vector v);
+    void scale(float scale);
     void transform(Eigen::Matrix4d transMat);
 
 private:

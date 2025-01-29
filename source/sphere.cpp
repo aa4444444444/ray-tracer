@@ -59,6 +59,15 @@ Ray* Sphere::intersect(Ray* ray)
     return new Ray(x_i, y_i, z_i, (x_i - x_c), (y_i - y_c), (z_i - z_c));
 }
 
+void Sphere::transform(Eigen::Matrix4d transMat)
+{
+    Eigen::Vector4d augmented(m_center->getPoint()(0), m_center->getPoint()(1), m_center->getPoint()(2), 1);
+    Eigen::Vector4d transformed = transMat * augmented;
+    m_center->getPoint()(0) = transformed(0) / transformed(3);
+    m_center->getPoint()(1) = transformed(1) / transformed(3);
+    m_center->getPoint()(2) = transformed(2) / transformed(3);
+}
+
 Point* Sphere::getCenter() { return m_center; }
 float Sphere::getRadius() { return m_radius; }
 void Sphere::setRadius(float r) { m_radius = r; }

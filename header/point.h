@@ -10,6 +10,7 @@ public:
     Eigen::Vector3d getPoint();
     void setPoint(Eigen::Vector3d);
     void transform(Eigen::Matrix4d transMat);
+    float distance(Point p);
 
 private:
     Eigen::Vector3d m_point;
