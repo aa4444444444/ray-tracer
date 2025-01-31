@@ -4,6 +4,7 @@ Ray::Ray(float originX, float originY, float originZ, float directionX, float di
 {
     m_origin = new Point(originX, originY, originZ);
     m_direction = new Vector(directionX, directionY, directionZ);
+    m_direction->normalize();
 }
 
 Ray::~Ray()

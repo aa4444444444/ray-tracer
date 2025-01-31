@@ -1,19 +1,9 @@
 #include "../header/vector.h"
 #include <cmath>
 
-Vector::Vector(Eigen::Vector3d vec)
-{
-    m_vector = vec;
-    normalize();
-}
+Vector::Vector(Eigen::Vector3d vec) { m_vector = vec; }
 
-Vector::Vector(float x, float y, float z)
-{
-    m_vector = Eigen::Vector3d(x, y, z);
-
-    // Automatically normalize all vectors when created
-    normalize();
-}
+Vector::Vector(float x, float y, float z) { m_vector = Eigen::Vector3d(x, y, z); }
 
 Vector::Vector(Vector* vector) { m_vector = vector->getVector(); }
 
@@ -44,5 +34,4 @@ void Vector::transform(Eigen::Matrix4d transMat)
     m_vector(0) = result(0) / result(3);
     m_vector(1) = result(1) / result(3);
     m_vector(2) = result(2) / result(3);
-    normalize();
 }
