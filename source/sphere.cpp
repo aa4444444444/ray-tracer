@@ -1,4 +1,5 @@
 #include "../header/sphere.h"
+#include <iostream>
 
 Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
@@ -39,8 +40,11 @@ Ray* Sphere::intersect(Ray* ray)
     if (discriminant < 0) {
         return nullptr;
     } else if (discriminant == 0) {
+        // std::cout << "Found an intersection?" << std::endl;
         omega = -1 * b / 2;
     } else {
+        // std::cout << "Found an intersection?" << std::endl;
+
         float root_1 = (-1 * b + discriminant) / 2;
         float root_2 = (-1 * b - discriminant) / 2;
         if (root_1 < 0) {
@@ -63,9 +67,9 @@ void Sphere::transform(Eigen::Matrix4d transMat)
 {
     Eigen::Vector4d augmented(m_center->getPoint()(0), m_center->getPoint()(1), m_center->getPoint()(2), 1);
     Eigen::Vector4d transformed = transMat * augmented;
-    m_center->getPoint()(0) = transformed(0) / transformed(3);
-    m_center->getPoint()(1) = transformed(1) / transformed(3);
-    m_center->getPoint()(2) = transformed(2) / transformed(3);
+    Eigen::Vector3d newCenter(transformed(0), transformed(1), transformed(2));
+    std::cout << "NEW CENTER: " << newCenter << std::endl;
+    m_center->setPoint(newCenter);
 }
 
 Point* Sphere::getCenter() { return m_center; }

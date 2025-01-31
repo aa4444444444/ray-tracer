@@ -20,5 +20,6 @@ int main(int argc, char* argv[])
     Camera* camera = new Camera(0, 0, 8, 0, 0, 0, 0, 1, 0);
     camera->render(world);
 
+    std::cout << " WTF" << std::endl;
     return 0;
 }

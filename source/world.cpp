@@ -1,5 +1,6 @@
 #include "../header/world.h"
 #include <algorithm>
+#include <iostream>
 
 World::World() { }
 
@@ -18,21 +19,40 @@ Color World::spawnRay(Ray* ray)
 {
     Point* closestPoint = nullptr;
     Color closestObjectColor(0, 0, 0);
-    std::for_each(
-        m_objectList.begin(), m_objectList.end(), [ray, closestObjectColor, closestPoint](const auto& elem) mutable {
-            Ray* intersection = elem->intersect(ray);
-            if (intersection != nullptr) {
-                if (closestPoint == nullptr) {
-                    closestPoint = intersection->getOrigin();
-                } else {
-                    if (intersection->getOrigin()->distance(Point(0, 0, 0)) < closestPoint->distance(Point(0, 0, 0))) {
-                        closestPoint = intersection->getOrigin();
-                        short newRed = 255;
-                        closestObjectColor = Color(newRed, newRed, 0);
-                    }
+
+    for (size_t i = 0; i < m_objectList.size(); i++) {
+        Ray* intersection = m_objectList[i]->intersect(ray);
+        if (intersection != nullptr) {
+            std::cout << "INTERSECTOIN FOUND!!!" << std::endl;
+            std::cout << intersection->getOrigin()->getPoint() << std::endl;
+            std::cout << intersection->getDirection()->getVector() << std::endl;
+            if (closestPoint == nullptr) {
+                closestPoint = new Point(intersection->getOrigin());
+                closestObjectColor.setRed(255);
+                closestObjectColor.setBlue(255);
+                std::cout << "NEW POINT: " << closestPoint->getPoint() << std::endl;
+            } else {
+                std::cout << "closest object was not nullptr!" << std::endl;
+                Point* coordOrigin = new Point(0, 0, 0);
+                if (intersection->getOrigin()->distance(coordOrigin) < closestPoint->distance(coordOrigin)) {
+                    delete closestPoint;
+                    closestPoint = new Point(intersection->getOrigin());
+                    closestObjectColor.setRed(255);
+                    closestObjectColor.setBlue(255);
                 }
+                delete coordOrigin;
             }
-        });
+        }
+        delete intersection;
+    }
+
+    if (closestPoint == nullptr) {
+        // std::cout << "CLOSEST POINT IS NULL" << std::endl;
+    } else {
+        std::cout << "Closest Point: " << closestPoint->getPoint() << std::endl;
+        std::cout << "Color: " << closestObjectColor.getRed() << " " << closestObjectColor.getGreen() << " "
+                  << closestObjectColor.getBlue() << std::endl;
+    }
 
     return closestObjectColor;
 }

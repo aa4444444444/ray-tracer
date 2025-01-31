@@ -15,6 +15,8 @@ Vector::Vector(float x, float y, float z)
     normalize();
 }
 
+Vector::Vector(Vector* vector) { m_vector = vector->getVector(); }
+
 Eigen::Vector3d Vector::getVector() { return m_vector; }
 
 void Vector::setVector(Eigen::Vector3d vec) { m_vector = vec; }
@@ -31,7 +33,7 @@ float Vector::magnitude() { return m_vector.norm(); }
 
 void Vector::scale(float scale) { m_vector = m_vector * scale; }
 
-Vector Vector::cross(Vector v) { return Vector(m_vector.cross(v.getVector())); }
+Vector* Vector::cross(Vector* v) { return new Vector(m_vector.cross(v->getVector())); }
 
 float Vector::dot(Vector v) { return m_vector.dot(v.getVector()); }
 

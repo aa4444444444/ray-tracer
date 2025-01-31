@@ -22,6 +22,18 @@ endef
 # Object files
 OBJS = $(SRCS:.cpp=.o)
 
+# This determines how to handle make clean
+# Differentiates between windows vs linux systems
+ifdef OS
+   RM = del /Q
+   FixPath = $(subst /,\,$1)
+else
+   ifeq ($(shell uname), Linux)
+      RM = rm -f
+      FixPath = $1
+   endif
+endif
+
 # Default rule to build and run the executable
 all: $(TARGET)
 
@@ -39,4 +51,4 @@ run: $(TARGET)
 
 # Clean rule to remove generated files
 clean:
-	del $(TARGET_DEL) $(OBJS)
+	$(RM) $(call FixPath, $(TARGET_DEL)) $(call FixPath, $(OBJS))

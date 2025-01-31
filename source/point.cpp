@@ -5,6 +5,8 @@ Point::Point(float x, float y, float z) { m_point = Eigen::Vector3d(x, y, z); }
 
 Point::Point() { m_point = Eigen::Vector3d(0, 0, 0); }
 
+Point::Point(Point* point) { m_point = point->getPoint(); }
+
 Eigen::Vector3d Point::getPoint() { return m_point; }
 
 void Point::setPoint(Eigen::Vector3d point) { m_point = point; }
@@ -18,9 +20,9 @@ void Point::transform(Eigen::Matrix4d transMat)
     m_point(2) = result(2) / result(3);
 }
 
-float Point::distance(Point p)
+float Point::distance(Point* p)
 {
-    return sqrt((m_point(0) - p.getPoint()(0)) * (m_point(0) - p.getPoint()(0))
-        + (m_point(1) - p.getPoint()(1)) * (m_point(1) - p.getPoint()(1))
-        + (m_point(2) - p.getPoint()(2)) * (m_point(2) - p.getPoint()(2)));
+    return sqrt((m_point(0) - p->getPoint()(0)) * (m_point(0) - p->getPoint()(0))
+        + (m_point(1) - p->getPoint()(1)) * (m_point(1) - p->getPoint()(1))
+        + (m_point(2) - p->getPoint()(2)) * (m_point(2) - p->getPoint()(2)));
 }
