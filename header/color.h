@@ -1,10 +1,10 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-class Color
-{
+class Color {
 public:
     Color(short red, short green, short blue);
+    Color();
     short getRed();
     short getGreen();
     short getBlue();

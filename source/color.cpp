@@ -5,34 +5,23 @@ Color::Color(short red, short green, short blue)
     m_red = red;
     m_green = green;
     m_blue = blue;
-};
-
-short Color::getRed()
-{
-    return m_red;
 }
 
-short Color::getGreen()
+Color::Color()
 {
-    return m_green;
+    m_red = 0;
+    m_green = 0;
+    m_blue = 0;
 }
 
-short Color::getBlue()
-{
-    return m_blue;
-}
+short Color::getRed() { return m_red; }
 
-void Color::setRed(short red)
-{
-    m_red = red;
-}
+short Color::getGreen() { return m_green; }
 
-void Color::setGreen(short green)
-{
-    m_green = green;
-}
+short Color::getBlue() { return m_blue; }
 
-void Color::setBlue(short blue)
-{
-    m_blue = blue;
-}
+void Color::setRed(short red) { m_red = red; }
+
+void Color::setGreen(short green) { m_green = green; }
+
+void Color::setBlue(short blue) { m_blue = blue; }

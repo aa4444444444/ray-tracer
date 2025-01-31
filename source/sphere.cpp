@@ -1,11 +1,12 @@
 #include "../header/sphere.h"
 #include <iostream>
 
-Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
+Sphere::Sphere(float centerX, float centerY, float centerZ, float radius, short red, short green, short blue)
     : Object()
 {
     m_center = new Point(centerX, centerY, centerZ);
     m_radius = radius;
+    m_color = Color(red, green, blue);
 }
 
 Sphere::~Sphere() { delete m_center; }

@@ -28,8 +28,9 @@ Color World::spawnRay(Ray* ray)
             // std::cout << intersection->getDirection()->getVector() << std::endl;
             if (closestPoint == nullptr) {
                 closestPoint = new Point(intersection->getOrigin());
-                closestObjectColor.setRed(255);
-                closestObjectColor.setBlue(255);
+                closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
+                closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
+                closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
                 // std::cout << "NEW POINT: " << closestPoint->getPoint() << std::endl;
             } else {
                 // std::cout << "closest object was not nullptr!" << std::endl;
@@ -37,8 +38,9 @@ Color World::spawnRay(Ray* ray)
                 if (intersection->getOrigin()->distance(coordOrigin) < closestPoint->distance(coordOrigin)) {
                     delete closestPoint;
                     closestPoint = new Point(intersection->getOrigin());
-                    closestObjectColor.setRed(255);
-                    closestObjectColor.setBlue(255);
+                    closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
+                    closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
+                    closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
                 }
                 delete coordOrigin;
             }
