@@ -7,6 +7,8 @@ Vector::Vector(float x, float y, float z) { m_vector = Eigen::Vector3d(x, y, z);
 
 Vector::Vector(Vector* vector) { m_vector = vector->getVector(); }
 
+Vector::Vector() { m_vector = Eigen::Vector3d(0, 0, 0); }
+
 Eigen::Vector3d Vector::getVector() { return m_vector; }
 
 void Vector::setVector(Eigen::Vector3d vec) { m_vector = vec; }

@@ -6,16 +6,9 @@
 Camera::Camera(float positionX, float positionY, float positionZ, float lookatX, float lookatY, float lookatZ,
     float upX, float upY, float upZ)
 {
-    m_position = new Point(positionX, positionY, positionZ);
-    m_lookat = new Point(lookatX, lookatY, lookatZ);
-    m_up = new Vector(upX, upY, upZ);
-}
-
-Camera::~Camera()
-{
-    delete m_position;
-    delete m_lookat;
-    delete m_up;
+    m_position = Point(positionX, positionY, positionZ);
+    m_lookat = Point(lookatX, lookatY, lookatZ);
+    m_up = Vector(upX, upY, upZ);
 }
 
 void Camera::render(World* world)
@@ -34,16 +27,16 @@ void Camera::render(World* world)
         outfile << "255" << std::endl;
 
         // First convert objects from world coordinates to camera coordinates
-        Vector n(m_position->getPoint() - m_lookat->getPoint());
+        Vector n(m_position.getPoint() - m_lookat.getPoint());
         n.normalize();
-        Vector u = m_up->cross(&n);
+        Vector u = m_up.cross(&n);
         u.normalize();
         Vector v = n.cross(&u);
         Eigen::Matrix4d viewTransform;
         viewTransform << u.getVector()(0), u.getVector()(1), u.getVector()(2),
-            (m_position->getPoint() * -1).dot(u.getVector()), v.getVector()(0), v.getVector()(1), v.getVector()(2),
-            (m_position->getPoint() * -1).dot(v.getVector()), n.getVector()(0), n.getVector()(1), n.getVector()(2),
-            (m_position->getPoint() * -1).dot(n.getVector()), 0, 0, 0, 1;
+            (m_position.getPoint() * -1).dot(u.getVector()), v.getVector()(0), v.getVector()(1), v.getVector()(2),
+            (m_position.getPoint() * -1).dot(v.getVector()), n.getVector()(0), n.getVector()(1), n.getVector()(2),
+            (m_position.getPoint() * -1).dot(n.getVector()), 0, 0, 0, 1;
         world->transformAllObjects(viewTransform);
 
         // world location of top-left pixel of film plane is (-w/2, h/2, f)

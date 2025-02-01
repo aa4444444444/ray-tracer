@@ -4,11 +4,9 @@
 Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
 {
-    m_center = new Point(centerX, centerY, centerZ);
+    m_center = Point(centerX, centerY, centerZ);
     m_radius = radius;
 }
-
-Sphere::~Sphere() { delete m_center; }
 
 float getDiscriminant(float b, float c) { return b * b - 4 * c; }
 
@@ -22,10 +20,10 @@ Ray* Sphere::intersect(Ray* ray)
     float d_x = rayDirection->getVector()(0);
     float d_y = rayDirection->getVector()(1);
     float d_z = rayDirection->getVector()(2);
-    Point* sphereCenter = this->getCenter();
-    float x_c = sphereCenter->getPoint()(0);
-    float y_c = sphereCenter->getPoint()(1);
-    float z_c = sphereCenter->getPoint()(2);
+
+    float x_c = m_center.getPoint()(0);
+    float y_c = m_center.getPoint()(1);
+    float z_c = m_center.getPoint()(2);
 
     float b = 2 * (d_x * (x_o - x_c) + d_y * (y_o - y_c) + d_z * (z_o - z_c));
     float c = (x_o - x_c) * (x_o - x_c) + (y_o - y_c) * (y_o - y_c) + (z_o - z_c) * (z_o - z_c)
@@ -63,12 +61,12 @@ Ray* Sphere::intersect(Ray* ray)
 void Sphere::transform(Eigen::Matrix4d transMat)
 {
 
-    Eigen::Vector4d augmented(m_center->getPoint()(0), m_center->getPoint()(1), m_center->getPoint()(2), 1);
+    Eigen::Vector4d augmented(m_center.getPoint()(0), m_center.getPoint()(1), m_center.getPoint()(2), 1);
     Eigen::Vector4d transformed = transMat * augmented;
     Eigen::Vector3d newCenter(transformed(0), transformed(1), transformed(2));
-    m_center->setPoint(newCenter);
+    m_center.setPoint(newCenter);
 }
 
-Point* Sphere::getCenter() { return m_center; }
+Point Sphere::getCenter() { return m_center; }
 float Sphere::getRadius() { return m_radius; }
 void Sphere::setRadius(float r) { m_radius = r; }
