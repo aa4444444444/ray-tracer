@@ -39,9 +39,10 @@ Color World::spawnRay(Ray* ray)
                 }
                 delete coordOrigin;
             }
+
+            delete intersection;
         }
-        delete intersection;
-    }
+        }
 
     return closestObjectColor;
 }

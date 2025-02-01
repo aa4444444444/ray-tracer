@@ -21,20 +21,20 @@ Triangle::~Triangle()
 Ray* Triangle::intersect(Ray* ray)
 {
     // DO NOT NORMALIZE THESE
-    Vector* T = new Vector(ray->getOrigin()->getPoint() - m_point0->getPoint());
-    Vector* P = new Vector(ray->getDirection()->cross(m_e2));
-    Vector* Q = new Vector(T->cross(m_e1));
+    Vector T(ray->getOrigin()->getPoint() - m_point0->getPoint());
+    Vector P(ray->getDirection()->cross(m_e2));
+    Vector Q(T.cross(m_e1));
 
-    float denominator = P->dot(m_e1);
+    float denominator = P.dot(m_e1);
 
     if (denominator == 0) {
         // No intersect
         return nullptr;
     } else {
         float u, v, w;
-        w = (Q->dot(m_e2)) / denominator;
-        u = (P->dot(T)) / denominator;
-        v = (Q->dot(ray->getDirection())) / denominator;
+        w = (Q.dot(m_e2)) / denominator;
+        u = (P.dot(&T)) / denominator;
+        v = (Q.dot(ray->getDirection())) / denominator;
 
         if (w < 0) {
             // Intersection behind ray origin, ignore
@@ -45,7 +45,7 @@ Ray* Triangle::intersect(Ray* ray)
         } else {
             Eigen::Vector3d intersectPoint
                 = (1 - u - v) * m_point0->getPoint() + u * m_point1->getPoint() + v * m_point2->getPoint();
-            Eigen::Vector3d normal = (m_e1->cross(m_e2))->getVector();
+            Eigen::Vector3d normal = (m_e1->cross(m_e2)).getVector();
             return new Ray(intersectPoint(0), intersectPoint(1), intersectPoint(2), normal(0), normal(1), normal(2));
         }
     }
