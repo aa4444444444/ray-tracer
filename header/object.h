@@ -5,6 +5,9 @@
 #include "ray.h"
 #include <string>
 
+/**
+ * @brief Parent class for renderable objects.
+ */
 class Object {
 public:
     virtual Ray* intersect(Ray* ray) = 0;

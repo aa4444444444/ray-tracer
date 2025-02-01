@@ -3,6 +3,9 @@
 
 #include <Eigen/Dense>
 
+/**
+ * @brief Represent a point in 3D space.
+ */
 class Point {
 public:
     Point();

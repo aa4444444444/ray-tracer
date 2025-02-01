@@ -4,6 +4,10 @@
 #include "object.h"
 #include "point.h"
 
+/**
+ * @brief A renderable sphere.
+ *
+ */
 class Sphere : public Object {
 public:
     Sphere(float centerX, float centerY, float centerZ, float radius);

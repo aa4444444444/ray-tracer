@@ -3,6 +3,10 @@
 
 #include <Eigen/Dense>
 
+/**
+ * @brief Represents a vector in 3D space.
+ *
+ */
 class Vector {
 public:
     Vector(Eigen::Vector3d vec);

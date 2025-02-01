@@ -1,6 +1,11 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+/**
+ * @brief Color.
+ *
+ * Represents an RGB color.
+ */
 class Color {
 public:
     Color(short red, short green, short blue);

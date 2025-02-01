@@ -4,6 +4,11 @@
 #include "point.h"
 #include "vector.h"
 
+/**
+ * @brief Represents a ray in 3D space.
+ *
+ * Rays have an origin and a direction.
+ */
 class Ray {
 public:
     Ray(float originX, float originY, float originZ, float directionX, float directionY, float directionZ);

@@ -32,11 +32,14 @@ void Camera::render(World* world)
         Vector u = m_up.cross(&n);
         u.normalize();
         Vector v = n.cross(&u);
+
+        // Create view transform matrix
         Eigen::Matrix4d viewTransform;
         viewTransform << u.getVector()(0), u.getVector()(1), u.getVector()(2),
             (m_position.getPoint() * -1).dot(u.getVector()), v.getVector()(0), v.getVector()(1), v.getVector()(2),
             (m_position.getPoint() * -1).dot(v.getVector()), n.getVector()(0), n.getVector()(1), n.getVector()(2),
             (m_position.getPoint() * -1).dot(n.getVector()), 0, 0, 0, 1;
+
         world->transformAllObjects(viewTransform);
 
         // world location of top-left pixel of film plane is (-w/2, h/2, f)
@@ -47,32 +50,25 @@ void Camera::render(World* world)
         float pixelWidth = FILM_PLANE_WIDTH / (IMAGE_WIDTH * 1.0);
         float pixelHeight = FILM_PLANE_HEIGHT / (IMAGE_HEIGHT * 1.0);
 
-        Eigen::Vector3d* topLeftRay = new Eigen::Vector3d(
+        Eigen::Vector3d topLeftRay(
             -1 * FILM_PLANE_WIDTH / 2.0 + pixelWidth / 2.0, FILM_PLANE_HEIGHT / 2.0 - pixelHeight / 2.0, -FOCAL_LENGTH);
 
         // Loop through the film plane
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
-                // 0, 0, 0 since we are in camera coordinates and starting from the camera
-                // std::cout << "Spawning a ray going through: (" << (*topLeftRay)(0) + j * pixelWidth << ", "
-                // << (*topLeftRay)(1) - i * pixelHeight << ", " << (*topLeftRay)(2) << ")" << std::endl;
-                Ray* ray = new Ray(
-                    0, 0, 0, (*topLeftRay)(0) + j * pixelWidth, (*topLeftRay)(1) - i * pixelHeight, (*topLeftRay)(2));
-                // std::cout << "Ray Created without issue" << std::endl;
+                // 0, 0, 0 since we are now in camera coordinates
+                Ray* ray
+                    = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
                 Color c = world->spawnRay(ray);
-                // std::cout << "Spawned ray in world without issue" << std::endl;
                 outfile << c.getRed() << " " << c.getGreen() << " " << c.getBlue() << " ";
-                // std::cout << "Wrote to outfile without issue" << std::endl;
                 delete ray;
-                // std::cout << "Deleted ray without issue" << std::endl;
             }
             outfile << std::endl;
         }
 
-        // Need to verify that intersection happens at a point past the film plane
+        // Need to verify that intersection happens at a point past the film plane - TODO
 
         outfile.close();
-        delete topLeftRay;
         delete world;
     } else {
         std::cerr << "COULD NOT OPEN FILE" << std::endl;
