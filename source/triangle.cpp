@@ -13,9 +13,12 @@ Triangle::Triangle(float x1, float y1, float z1, float x2, float y2, float z2, f
 
 Ray* Triangle::intersect(Ray* ray)
 {
+    Point rayOrigin = ray->getOrigin();
+    Vector rayDirection = ray->getDirection();
+
     // DO NOT NORMALIZE THESE
-    Vector T(ray->getOrigin()->getPoint() - m_point0.getPoint());
-    Vector P(ray->getDirection()->cross(&m_e2));
+    Vector T(rayOrigin.getPoint() - m_point0.getPoint());
+    Vector P(rayDirection.cross(&m_e2));
     Vector Q(T.cross(&m_e1));
 
     float denominator = P.dot(&m_e1);
@@ -27,7 +30,7 @@ Ray* Triangle::intersect(Ray* ray)
         float u, v, w;
         w = (Q.dot(&m_e2)) / denominator;
         u = (P.dot(&T)) / denominator;
-        v = (Q.dot(ray->getDirection())) / denominator;
+        v = (Q.dot(&rayDirection)) / denominator;
 
         if (w < 0) {
             // Intersection behind ray origin, ignore

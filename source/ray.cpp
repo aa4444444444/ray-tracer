@@ -2,17 +2,11 @@
 
 Ray::Ray(float originX, float originY, float originZ, float directionX, float directionY, float directionZ)
 {
-    m_origin = new Point(originX, originY, originZ);
-    m_direction = new Vector(directionX, directionY, directionZ);
-    m_direction->normalize();
+    m_origin = Point(originX, originY, originZ);
+    m_direction = Vector(directionX, directionY, directionZ);
+    m_direction.normalize();
 }
 
-Ray::~Ray()
-{
-    delete m_origin;
-    delete m_direction;
-}
+Point Ray::getOrigin() { return m_origin; }
 
-Point* Ray::getOrigin() { return m_origin; }
-
-Vector* Ray::getDirection() { return m_direction; }
+Vector Ray::getDirection() { return m_direction; }

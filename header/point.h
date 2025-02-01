@@ -9,6 +9,7 @@
 class Point {
 public:
     Point();
+    Point(Eigen::Vector3d point);
     Point(float x, float y, float z);
     Point(Point* point);
     Eigen::Vector3d getPoint();

@@ -5,6 +5,8 @@ Point::Point(float x, float y, float z) { m_point = Eigen::Vector3d(x, y, z); }
 
 Point::Point() { m_point = Eigen::Vector3d(0, 0, 0); }
 
+Point::Point(Eigen::Vector3d point) { m_point = point; }
+
 Point::Point(Point* point) { m_point = point->getPoint(); }
 
 Eigen::Vector3d Point::getPoint() { return m_point; }

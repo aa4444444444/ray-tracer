@@ -12,14 +12,14 @@ float getDiscriminant(float b, float c) { return b * b - 4 * c; }
 
 Ray* Sphere::intersect(Ray* ray)
 {
-    Point* rayOrigin = ray->getOrigin();
-    float x_o = rayOrigin->getPoint()(0);
-    float y_o = rayOrigin->getPoint()(1);
-    float z_o = rayOrigin->getPoint()(2);
-    Vector* rayDirection = ray->getDirection();
-    float d_x = rayDirection->getVector()(0);
-    float d_y = rayDirection->getVector()(1);
-    float d_z = rayDirection->getVector()(2);
+    Point rayOrigin = ray->getOrigin();
+    float x_o = rayOrigin.getPoint()(0);
+    float y_o = rayOrigin.getPoint()(1);
+    float z_o = rayOrigin.getPoint()(2);
+    Vector rayDirection = ray->getDirection();
+    float d_x = rayDirection.getVector()(0);
+    float d_y = rayDirection.getVector()(1);
+    float d_z = rayDirection.getVector()(2);
 
     float x_c = m_center.getPoint()(0);
     float y_c = m_center.getPoint()(1);

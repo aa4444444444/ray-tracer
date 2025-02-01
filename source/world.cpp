@@ -30,7 +30,8 @@ Color World::spawnRay(Ray* ray)
         if (intersection != nullptr) {
             if (closestPoint == nullptr) {
                 // If an intersection hasn't been found yet
-                closestPoint = new Point(intersection->getOrigin());
+                Point intersectionOrigin = intersection->getOrigin();
+                closestPoint = new Point(intersectionOrigin.getPoint());
                 closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
                 closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
                 closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
@@ -38,7 +39,7 @@ Color World::spawnRay(Ray* ray)
                 // If an intersection was previously found
                 // Check if new intersection is closer
 
-                if (intersection->getOrigin()->distance(&coordOrigin) < closestPoint->distance(&coordOrigin)) {
+                if (intersection->getOrigin().distance(&coordOrigin) < closestPoint->distance(&coordOrigin)) {
                     delete closestPoint;
                     closestPoint = new Point(intersection->getOrigin());
                     closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
