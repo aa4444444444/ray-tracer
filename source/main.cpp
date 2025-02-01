@@ -30,5 +30,6 @@ int main(int argc, char* argv[])
     world->addObject(floor2);
     Camera* camera = new Camera(0, 1, 7, 0, 0, 0, 0, 1, 0);
     camera->render(world);
+    delete camera;
     return 0;
 }

@@ -42,7 +42,11 @@ Color World::spawnRay(Ray* ray)
 
             delete intersection;
         }
-        }
+    }
+
+    if (closestPoint != nullptr) {
+        delete closestPoint;
+    }
 
     return closestObjectColor;
 }
