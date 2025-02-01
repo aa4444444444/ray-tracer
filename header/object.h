@@ -18,9 +18,11 @@ public:
     }
     virtual ~Object() { };
 
+protected:
+    Color m_color;
+
 private:
     std::string material;
-    Color m_color;
 };
 
 #endif

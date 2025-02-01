@@ -1,12 +1,11 @@
 #include "../header/sphere.h"
 #include <iostream>
 
-Sphere::Sphere(float centerX, float centerY, float centerZ, float radius, short red, short green, short blue)
+Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
 {
     m_center = new Point(centerX, centerY, centerZ);
     m_radius = radius;
-    m_color = Color(red, green, blue);
 }
 
 Sphere::~Sphere() { delete m_center; }
@@ -41,13 +40,10 @@ Ray* Sphere::intersect(Ray* ray)
     if (discriminant < 0) {
         return nullptr;
     } else if (discriminant == 0) {
-        // std::cout << "Found an intersection?" << std::endl;
-        omega = -1 * b / 2;
+        omega = -1 * b / 2.0;
     } else {
-        // std::cout << "Found an intersection?" << std::endl;
-
-        float root_1 = (-1 * b + discriminant) / 2;
-        float root_2 = (-1 * b - discriminant) / 2;
+        float root_1 = (-1 * b + discriminant) / 2.0;
+        float root_2 = (-1 * b - discriminant) / 2.0;
         if (root_1 < 0) {
             omega = root_2;
         } else if (root_2 < 0) {
@@ -66,10 +62,10 @@ Ray* Sphere::intersect(Ray* ray)
 
 void Sphere::transform(Eigen::Matrix4d transMat)
 {
+
     Eigen::Vector4d augmented(m_center->getPoint()(0), m_center->getPoint()(1), m_center->getPoint()(2), 1);
     Eigen::Vector4d transformed = transMat * augmented;
     Eigen::Vector3d newCenter(transformed(0), transformed(1), transformed(2));
-    std::cout << "NEW CENTER: " << newCenter << std::endl;
     m_center->setPoint(newCenter);
 }
 

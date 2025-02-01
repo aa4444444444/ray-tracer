@@ -17,6 +17,12 @@ TARGET_DEL = main.exe
 define SRCS 
 source/main.cpp source/color.cpp source/point.cpp source/vector.cpp 
 source/ray.cpp source/sphere.cpp source/world.cpp source/camera.cpp
+source/triangle.cpp
+endef
+
+# Header only files that we depend on
+define DEPS
+header/object.h header/constants.h
 endef
 
 # Object files
@@ -38,7 +44,7 @@ endif
 all: $(TARGET)
 
 # Rule to link object files into the target executable
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) $(call FixPath, $(DEPS))
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
 # Rule to compile .cpp files into .o files

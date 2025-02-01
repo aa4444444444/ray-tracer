@@ -39,18 +39,16 @@ void Camera::render(World* world)
         Vector* u = m_up->cross(n);
         u->normalize();
         Vector* v = n->cross(u);
-        v->normalize();
         Eigen::Matrix4d viewTransform;
-        viewTransform << u->getVector()(0), v->getVector()(0), n->getVector()(0), 0, u->getVector()(1),
-            v->getVector()(1), n->getVector()(1), 0, u->getVector()(2), v->getVector()(2), n->getVector()(2), 0,
-            (m_position->getPoint() * -1).dot(u->getVector()), (m_position->getPoint() * -1).dot(v->getVector()),
-            (m_position->getPoint() * -1).dot(n->getVector()), 1;
+        viewTransform << u->getVector()(0), u->getVector()(1), u->getVector()(2),
+            (m_position->getPoint() * -1).dot(u->getVector()), v->getVector()(0), v->getVector()(1), v->getVector()(2),
+            (m_position->getPoint() * -1).dot(v->getVector()), n->getVector()(0), n->getVector()(1), n->getVector()(2),
+            (m_position->getPoint() * -1).dot(n->getVector()), 0, 0, 0, 1;
         world->transformAllObjects(viewTransform);
 
         delete n;
         delete u;
         delete v;
-        std::cout << viewTransform << std::endl;
 
         // world location of top-left pixel of film plane is (-w/2, h/2, f)
         // where w = width of film plane, h = height of film plane, f = focal length

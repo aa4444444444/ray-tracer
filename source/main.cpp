@@ -2,6 +2,7 @@
 #include "../header/color.h"
 #include "../header/point.h"
 #include "../header/sphere.h"
+#include "../header/triangle.h"
 #include "../header/vector.h"
 #include "../header/world.h"
 
@@ -14,12 +15,20 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    Sphere* sphere = new Sphere(0.1, 0.2, 4, 1, (short)255, (short)0, (short)255);
+    Sphere* sphere = new Sphere(0.1, 1, 4.5, 1);
+    sphere->setColor(Color(255, 0, 0));
+    Sphere* sphere2 = new Sphere(2.3, -0.3, 2.2, 1.3);
+    sphere2->setColor(Color(0, 0, 255));
+    Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
+    floor1->setColor(Color(0, 255, 0));
+    Triangle* floor2 = new Triangle(7, -1.5, -60, -3, -1.5, 10, 7, -1.5, 10);
+    floor2->setColor(Color(0, 255, 0));
     World* world = new World();
     world->addObject(sphere);
-    Camera* camera = new Camera(0, 0, 8, 0, 0, 0, 0, 1, 0);
+    world->addObject(sphere2);
+    world->addObject(floor1);
+    world->addObject(floor2);
+    Camera* camera = new Camera(0, 1, 7, 0, 0, 0, 0, 1, 0);
     camera->render(world);
-
-    std::cout << " WTF" << std::endl;
     return 0;
 }

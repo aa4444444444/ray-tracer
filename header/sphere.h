@@ -6,7 +6,7 @@
 
 class Sphere : public Object {
 public:
-    Sphere(float centerX, float centerY, float centerZ, float radius, short red, short green, short blue);
+    Sphere(float centerX, float centerY, float centerZ, float radius);
     ~Sphere();
     Point* getCenter();
     float getRadius();
