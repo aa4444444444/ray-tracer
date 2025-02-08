@@ -41,6 +41,7 @@ void Camera::render(World* world)
             (m_position.getPoint() * -1).dot(n.getVector()), 0, 0, 0, 1;
 
         world->transformAllObjects(viewTransform);
+        world->transformLightSource(viewTransform);
 
         // world location of top-left pixel of film plane is (-w/2, h/2, f)
         // where w = width of film plane, h = height of film plane, f = focal length
@@ -60,7 +61,7 @@ void Camera::render(World* world)
                 Ray* ray
                     = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
                 Color c = world->spawnRay(ray);
-                outfile << c.getRed() << " " << c.getGreen() << " " << c.getBlue() << " ";
+                outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
                 delete ray;
             }
             outfile << std::endl;

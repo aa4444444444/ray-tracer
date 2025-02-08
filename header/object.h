@@ -2,6 +2,7 @@
 #define OBJECT_H
 
 #include "color.h"
+#include "intersection.h"
 #include "ray.h"
 #include <string>
 
@@ -10,7 +11,7 @@
  */
 class Object {
 public:
-    virtual Ray* intersect(Ray* ray) = 0;
+    virtual Intersection* intersect(Ray* ray) = 0;
     virtual void transform(Eigen::Matrix4d transMat) = 0;
     Color getColor() { return m_color; }
     void setColor(Color c)

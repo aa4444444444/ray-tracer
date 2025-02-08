@@ -11,7 +11,7 @@ Triangle::Triangle(float x1, float y1, float z1, float x2, float y2, float z2, f
     m_e2 = Vector(m_point2.getPoint() - m_point0.getPoint());
 }
 
-Ray* Triangle::intersect(Ray* ray)
+Intersection* Triangle::intersect(Ray* ray)
 {
     Point rayOrigin = ray->getOrigin();
     Vector rayDirection = ray->getDirection();
@@ -42,7 +42,8 @@ Ray* Triangle::intersect(Ray* ray)
             Eigen::Vector3d intersectPoint
                 = (1 - u - v) * m_point0.getPoint() + u * m_point1.getPoint() + v * m_point2.getPoint();
             Eigen::Vector3d normal = (m_e1.cross(&m_e2)).getVector();
-            return new Ray(intersectPoint(0), intersectPoint(1), intersectPoint(2), normal(0), normal(1), normal(2));
+            return new Intersection(Point(intersectPoint(0), intersectPoint(1), intersectPoint(2)),
+                Vector(normal(0), normal(1), normal(2)));
         }
     }
 }

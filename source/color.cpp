@@ -1,6 +1,6 @@
 #include "../header/color.h"
 
-Color::Color(short red, short green, short blue)
+Color::Color(float red, float green, float blue)
 {
     m_red = red;
     m_green = green;
@@ -14,14 +14,20 @@ Color::Color()
     m_blue = 0;
 }
 
-short Color::getRed() { return m_red; }
+float Color::getRed() { return m_red; }
 
-short Color::getGreen() { return m_green; }
+float Color::getGreen() { return m_green; }
 
-short Color::getBlue() { return m_blue; }
+float Color::getBlue() { return m_blue; }
 
-void Color::setRed(short red) { m_red = red; }
+void Color::setRed(float red) { m_red = red; }
 
-void Color::setGreen(short green) { m_green = green; }
+void Color::setGreen(float green) { m_green = green; }
 
-void Color::setBlue(short blue) { m_blue = blue; }
+void Color::setBlue(float blue) { m_blue = blue; }
+
+int Color::getRed255() { return static_cast<int>(m_red * 255); }
+
+int Color::getGreen255() { return static_cast<int>(m_green * 255); }
+
+int Color::getBlue255() { return static_cast<int>(m_blue * 255); }
