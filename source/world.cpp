@@ -1,4 +1,5 @@
 #include "../header/world.h"
+#include "../header/constants.h"
 #include <algorithm>
 #include <iostream>
 
@@ -12,14 +13,16 @@ World::~World()
         }
     });
 
-    if (m_lightSource != nullptr) {
-        delete m_lightSource;
-    }
+    std::for_each(m_lightSourceList.begin(), m_lightSourceList.end(), [](const auto& elem) {
+        if (elem != nullptr) {
+            delete elem;
+        }
+    });
 }
 
 void World::addObject(Object* object) { m_objectList.push_back(object); }
 
-void World::addLightSource(LightSource* lightSource) { m_lightSource = lightSource; }
+void World::addLightSource(LightSource* lightSource) { m_lightSourceList.push_back(lightSource); }
 
 Color World::spawnRay(Ray* ray)
 {
@@ -69,13 +72,18 @@ void World::transform(Object* object, Eigen::Matrix4d transMat) { object->transf
 
 void World::transformAllObjects(Eigen::Matrix4d transMat)
 {
-    std::for_each(
-        m_objectList.begin(), m_objectList.end(), [transMat](const auto& elem) { elem->transform(transMat); });
+    std::for_each(m_objectList.begin(), m_objectList.end(), [transMat](const auto& elem) {
+        if (elem != nullptr) {
+            elem->transform(transMat);
+        }
+    });
 }
 
-void World::transformLightSource(Eigen::Matrix4d transMat)
+void World::transformLightSources(Eigen::Matrix4d transMat)
 {
-    if (m_lightSource != nullptr) {
-        m_lightSource->transform(transMat);
-    }
+    std::for_each(m_lightSourceList.begin(), m_lightSourceList.end(), [transMat](const auto& elem) {
+        if (elem != nullptr) {
+            elem->transform(transMat);
+        }
+    });
 }

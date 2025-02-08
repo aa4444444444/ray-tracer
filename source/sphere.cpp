@@ -5,6 +5,9 @@ Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
 {
     m_center = Point(centerX, centerY, centerZ);
+    // Defaults to a red sphere with a white spec highlight
+    setColor(Color(1.0, 0.0, 0.0));
+    setSpecColor(Color(1.0, 1.0, 1.0));
     m_radius = radius;
 }
 

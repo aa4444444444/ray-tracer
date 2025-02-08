@@ -20,10 +20,21 @@ public:
         m_color.setGreen(c.getGreen());
         m_color.setBlue(c.getBlue());
     }
+    Color getSpecColor() { return m_specColor; }
+    void setSpecColor(Color c)
+    {
+        m_specColor.setRed(c.getRed());
+        m_specColor.setGreen(c.getGreen());
+        m_specColor.setBlue(c.getBlue());
+    }
     virtual ~Object() { };
 
 protected:
+    // Ambient/Diffuse color
     Color m_color;
+
+    // Specular color
+    Color m_specColor;
 
 private:
     std::string material;

@@ -22,11 +22,11 @@ public:
     Color spawnRay(Ray* ray);
     void transform(Object* object, Eigen::Matrix4d transMat);
     void transformAllObjects(Eigen::Matrix4d transMat);
-    void transformLightSource(Eigen::Matrix4d transMat);
+    void transformLightSources(Eigen::Matrix4d transMat);
 
 private:
     std::vector<Object*> m_objectList;
-    LightSource* m_lightSource;
+    std::vector<LightSource*> m_lightSourceList;
 };
 
 #endif
