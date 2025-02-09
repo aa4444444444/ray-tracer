@@ -19,7 +19,7 @@ public:
     ~World();
     void addObject(Object* object);
     void addLightSource(LightSource* lightSource);
-    Color spawnRay(Ray* ray);
+    Radiance spawnRay(Ray* ray);
     void transform(Object* object, Eigen::Matrix4d transMat);
     void transformAllObjects(Eigen::Matrix4d transMat);
     void transformLightSources(Eigen::Matrix4d transMat);

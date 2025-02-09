@@ -1,4 +1,5 @@
 #include "../header/radiance.h"
+#include "../header/constants.h"
 
 Radiance::Radiance(float radianceRed, float radianceGreen, float radianceBlue)
 {
@@ -20,3 +21,17 @@ float Radiance::getRadianceBlue() { return m_blue; }
 void Radiance::setRadianceRed(float red) { m_red = red; }
 void Radiance::setRadianceGreen(float green) { m_green = green; }
 void Radiance::setRadianceBlue(float blue) { m_blue = blue; }
+void Radiance::capRadiance()
+{
+    if (m_red > MAXIMUM_IRRADIANCE) {
+        m_red = MAXIMUM_IRRADIANCE;
+    }
+
+    if (m_green > MAXIMUM_IRRADIANCE) {
+        m_green = MAXIMUM_IRRADIANCE;
+    }
+
+    if (m_blue > MAXIMUM_IRRADIANCE) {
+        m_blue = MAXIMUM_IRRADIANCE;
+    }
+}

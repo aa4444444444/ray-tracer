@@ -24,15 +24,15 @@ void World::addObject(Object* object) { m_objectList.push_back(object); }
 
 void World::addLightSource(LightSource* lightSource) { m_lightSourceList.push_back(lightSource); }
 
-Color World::spawnRay(Ray* ray)
+Radiance World::spawnRay(Ray* ray)
 {
     Intersection* closestIntersection = nullptr;
 
     // Need to keep track of the closest object so that we can access its Illumination Model
-    // Object* closestObject = nullptr;
+    Object* closestObject = nullptr;
 
     // Default color (color of background)
-    Color closestObjectColor(0.0, 0.0, 0.0);
+    Radiance closestObjectRadiance(BACKGROUND_RADIANCE_RED, BACKGROUND_RADIANCE_GREEN, BACKGROUND_RADIANCE_BLUE);
 
     // Origin
     Point coordOrigin(0, 0, 0);
@@ -44,22 +44,15 @@ Color World::spawnRay(Ray* ray)
             if (closestIntersection == nullptr) {
                 // If an intersection hasn't been found yet
                 closestIntersection = intersection;
-                closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
-                closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
-                closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
-                // closestObject = m_objectList[i];
+                closestObject = m_objectList[i];
             } else {
                 // If an intersection was previously found
                 // Check if new intersection is closer
-
                 if (intersection->getIntersectionPoint().distance(&coordOrigin)
                     < closestIntersection->getIntersectionPoint().distance(&coordOrigin)) {
                     delete closestIntersection;
                     closestIntersection = intersection;
-                    closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
-                    closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
-                    closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
-                    // closestObject = m_objectList[i];
+                    closestObject = m_objectList[i];
                 } else {
                     delete intersection;
                 }
@@ -72,12 +65,48 @@ Color World::spawnRay(Ray* ray)
     if (closestIntersection != nullptr) {
         Vector viewingDirection = ray->getDirection();
         viewingDirection.normalize();
+        viewingDirection.scale(-1);
         closestIntersection->setViewingDirection(viewingDirection);
+
+        bool isShadow = false;
+
+        // std::cout << "Closest Object: " << closestObject << std::endl;
+
+        // Looping through the rest of the object list to see if the point is illuminated
+        // If not illuminated, point is 'in shadow'
+        for (size_t i = 0; i < m_objectList.size(); i++) {
+            if (closestObject != m_objectList[i]) {
+
+                // As of right now, only checks the first light source
+                LightSource* light = m_lightSourceList[0];
+                Vector sourceVector
+                    = Vector(light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
+                sourceVector.normalize();
+                Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
+
+                Intersection* lightObjectIntersection = m_objectList[i]->intersect(lightSourceRay);
+
+                if (lightObjectIntersection != nullptr) {
+                    isShadow = true;
+                }
+
+                delete lightObjectIntersection;
+                delete lightSourceRay;
+            }
+        }
+
+        if (isShadow) {
+            closestObjectRadiance
+                = closestObject->getIlluminationModel()->illuminateInShadow(closestObject->getColor());
+        } else {
+            closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(
+                closestObject->getColor(), closestObject->getSpecColor(), closestIntersection, m_lightSourceList);
+        }
 
         delete closestIntersection;
     }
 
-    return closestObjectColor;
+    return closestObjectRadiance;
 }
 
 void World::transform(Object* object, Eigen::Matrix4d transMat) { object->transform(transMat); }

@@ -1,6 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include "radiance.h"
+
 /**
  * @brief Color.
  *
@@ -10,6 +12,7 @@ class Color {
 public:
     Color(float red, float green, float blue);
     Color();
+    Color(Radiance r);
     float getRed();
     float getGreen();
     float getBlue();

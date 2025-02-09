@@ -16,6 +16,8 @@ public:
     Radiance illuminate(Color objectColor, Color specColor, Intersection* intersection,
         std::vector<LightSource*> lightSources) override;
 
+    Radiance illuminateInShadow(Color objectColor) override;
+
 private:
     float m_ka;
     float m_kd;

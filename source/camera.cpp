@@ -60,7 +60,9 @@ void Camera::render(World* world)
                 // 0, 0, 0 since we are now in camera coordinates
                 Ray* ray
                     = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
-                Color c = world->spawnRay(ray);
+                Radiance radiance = world->spawnRay(ray);
+                radiance.capRadiance();
+                Color c = Color(radiance);
                 outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
                 delete ray;
             }

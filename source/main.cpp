@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
 {
 
     // Illumination Models
-    Phong* spherePhong = new Phong(0.2, 0.4, 0.6, 2);
-    Phong* sphere2Phong = new Phong(0.2, 0.4, 0.6, 2);
+    Phong* spherePhong = new Phong(0.9, 0.3, 0.65, 20);
+    Phong* sphere2Phong = new Phong(0.9, 0.3, 0.65, 20);
     Phong* floorPhong = new Phong(0.2, 0.4, 0.6, 2);
     Phong* floor2Phong = new Phong(0.2, 0.4, 0.6, 2);
 

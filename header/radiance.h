@@ -16,6 +16,7 @@ public:
     void setRadianceRed(float red);
     void setRadianceGreen(float green);
     void setRadianceBlue(float blue);
+    void capRadiance();
 
 private:
     float m_red;

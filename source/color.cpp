@@ -1,4 +1,5 @@
 #include "../header/color.h"
+#include "../header/constants.h"
 
 Color::Color(float red, float green, float blue)
 {
@@ -12,6 +13,13 @@ Color::Color()
     m_red = 0;
     m_green = 0;
     m_blue = 0;
+}
+
+Color::Color(Radiance r)
+{
+    m_red = r.getRadianceRed() / MAXIMUM_IRRADIANCE;
+    m_green = r.getRadianceGreen() / MAXIMUM_IRRADIANCE;
+    m_blue = r.getRadianceBlue() / MAXIMUM_IRRADIANCE;
 }
 
 float Color::getRed() { return m_red; }
