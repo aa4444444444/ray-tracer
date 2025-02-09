@@ -1,8 +1,8 @@
 #ifndef LIGHT_SOURCE_H
 #define LIGHT_SOURCE_H
 
-#include "color.h"
 #include "point.h"
+#include "radiance.h"
 
 /**
  * @brief Light Source.
@@ -11,16 +11,16 @@
  */
 class LightSource {
 public:
-    LightSource(Point position, Color color);
+    LightSource(Point position, Radiance color);
     Point getPosition();
-    Color getColor();
+    Radiance getRadiance();
     void setPosition(Point position);
-    void setColor(Color color);
+    void setRadiance(Radiance radiance);
     void transform(Eigen::Matrix4d transMat);
 
 private:
     Point m_position;
-    Color m_color;
+    Radiance m_radiance;
 };
 
 #endif

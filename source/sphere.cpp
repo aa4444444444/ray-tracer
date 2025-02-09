@@ -1,5 +1,4 @@
 #include "../header/sphere.h"
-#include "../header/util.h"
 #include <iostream>
 
 Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
@@ -60,10 +59,9 @@ Intersection* Sphere::intersect(Ray* ray)
     float z_i = (z_o + d_z * omega);
 
     Vector normal = Vector((x_i - x_c), (y_i - y_c), (z_i - z_c));
-    Vector reflection = findReflection(ray, normal);
+    normal.normalize();
 
     Intersection* intersection = new Intersection(Point(x_i, y_i, z_i), normal);
-    intersection->setPerfectMirrorReflectionDirection(reflection);
 
     return intersection;
 }

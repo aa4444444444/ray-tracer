@@ -69,8 +69,11 @@ Color World::spawnRay(Ray* ray)
 
     // At this point, closest intersection has been found OR there was no intersection
     // We proceed by applying a BRDF
-
     if (closestIntersection != nullptr) {
+        Vector viewingDirection = ray->getDirection();
+        viewingDirection.normalize();
+        closestIntersection->setViewingDirection(viewingDirection);
+
         delete closestIntersection;
     }
 

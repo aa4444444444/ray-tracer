@@ -42,8 +42,9 @@ Intersection* Triangle::intersect(Ray* ray)
             Eigen::Vector3d intersectPoint
                 = (1 - u - v) * m_point0.getPoint() + u * m_point1.getPoint() + v * m_point2.getPoint();
             Eigen::Vector3d normal = (m_e1.cross(&m_e2)).getVector();
-            return new Intersection(Point(intersectPoint(0), intersectPoint(1), intersectPoint(2)),
-                Vector(normal(0), normal(1), normal(2)));
+            Vector normalVec = Vector(normal);
+            normalVec.normalize();
+            return new Intersection(Point(intersectPoint(0), intersectPoint(1), intersectPoint(2)), normalVec);
         }
     }
 }

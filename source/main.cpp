@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
     // Create light source here!!!
     // Light sources get destroyed by the world
-    LightSource* light = new LightSource(Point(0, 8, 8), Color(1.0, 1.0, 1.0));
+    LightSource* light = new LightSource(Point(0, 8, 8), Radiance(100.0, 100.0, 100.0));
 
     // Create world and add objects + light to the scene
     // World will get destroyed after camera render

@@ -7,6 +7,13 @@ Radiance::Radiance(float radianceRed, float radianceGreen, float radianceBlue)
     m_blue = radianceBlue;
 }
 
+Radiance::Radiance()
+{
+    m_red = 0.0;
+    m_green = 0.0;
+    m_blue = 0.0;
+}
+
 float Radiance::getRadianceRed() { return m_red; }
 float Radiance::getRadianceGreen() { return m_green; }
 float Radiance::getRadianceBlue() { return m_blue; }

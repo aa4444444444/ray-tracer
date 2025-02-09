@@ -9,6 +9,7 @@
 class Radiance {
 public:
     Radiance(float radianceRed, float radianceGreen, float radianceBlue);
+    Radiance();
     float getRadianceRed();
     float getRadianceGreen();
     float getRadianceBlue();
