@@ -2,6 +2,7 @@
 #define OBJECT_H
 
 #include "color.h"
+#include "illumination_model.h"
 #include "intersection.h"
 #include "ray.h"
 #include <string>
@@ -27,7 +28,14 @@ public:
         m_specColor.setGreen(c.getGreen());
         m_specColor.setBlue(c.getBlue());
     }
-    virtual ~Object() { };
+    IlluminationModel* getIlluminationModel() { return m_illuminationModel; }
+    void setIlluminationModel(IlluminationModel* illuminationModel) { m_illuminationModel = illuminationModel; }
+    virtual ~Object()
+    {
+        if (m_illuminationModel != nullptr) {
+            delete m_illuminationModel;
+        }
+    };
 
 protected:
     // Ambient/Diffuse color
@@ -35,6 +43,8 @@ protected:
 
     // Specular color
     Color m_specColor;
+
+    IlluminationModel* m_illuminationModel;
 
 private:
     std::string material;

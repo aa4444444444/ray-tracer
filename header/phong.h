@@ -1,7 +1,9 @@
 #ifndef PHONG_H
 #define PHONG_H
 
+#include "constants.h"
 #include "illumination_model.h"
+#include "intersection.h"
 
 /**
  * @brief The Phong Illumination Model.
@@ -11,7 +13,8 @@ class Phong : public IlluminationModel {
 public:
     Phong(float k_a, float k_d, float k_s, float k_e);
 
-    void illuminate() override;
+    Radiance illuminate(Color objectColor, Color specColor, Intersection* intersection,
+        std::vector<LightSource*> lightSources) override;
 
 private:
     float m_ka;

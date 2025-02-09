@@ -26,8 +26,12 @@ void World::addLightSource(LightSource* lightSource) { m_lightSourceList.push_ba
 
 Color World::spawnRay(Ray* ray)
 {
+    Intersection* closestIntersection = nullptr;
+
+    // Need to keep track of the closest object so that we can access its Illumination Model
+    // Object* closestObject = nullptr;
+
     // Default color (color of background)
-    Point* closestPoint = nullptr;
     Color closestObjectColor(0.0, 0.0, 0.0);
 
     // Origin
@@ -37,32 +41,37 @@ Color World::spawnRay(Ray* ray)
     for (size_t i = 0; i < m_objectList.size(); i++) {
         Intersection* intersection = m_objectList[i]->intersect(ray);
         if (intersection != nullptr) {
-            if (closestPoint == nullptr) {
+            if (closestIntersection == nullptr) {
                 // If an intersection hasn't been found yet
-                Point intersectionOrigin = intersection->getIntersectionPoint();
-                closestPoint = new Point(intersectionOrigin.getPoint());
+                closestIntersection = intersection;
                 closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
                 closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
                 closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
+                // closestObject = m_objectList[i];
             } else {
                 // If an intersection was previously found
                 // Check if new intersection is closer
 
                 if (intersection->getIntersectionPoint().distance(&coordOrigin)
-                    < closestPoint->distance(&coordOrigin)) {
-                    delete closestPoint;
-                    closestPoint = new Point(intersection->getIntersectionPoint());
+                    < closestIntersection->getIntersectionPoint().distance(&coordOrigin)) {
+                    delete closestIntersection;
+                    closestIntersection = intersection;
                     closestObjectColor.setRed(m_objectList[i]->getColor().getRed());
                     closestObjectColor.setGreen(m_objectList[i]->getColor().getGreen());
                     closestObjectColor.setBlue(m_objectList[i]->getColor().getBlue());
+                    // closestObject = m_objectList[i];
+                } else {
+                    delete intersection;
                 }
             }
-            delete intersection;
         }
     }
 
-    if (closestPoint != nullptr) {
-        delete closestPoint;
+    // At this point, closest intersection has been found OR there was no intersection
+    // We proceed by applying a BRDF
+
+    if (closestIntersection != nullptr) {
+        delete closestIntersection;
     }
 
     return closestObjectColor;
