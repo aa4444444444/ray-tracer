@@ -18,11 +18,14 @@ public:
 
     Radiance illuminateInShadow(Color objectColor) override;
 
+    void setPhongBlinn(bool phongBlinn);
+
 private:
     float m_ka;
     float m_kd;
     float m_ks;
     float m_ke;
+    bool m_isPhongBlinn;
 };
 
 #endif

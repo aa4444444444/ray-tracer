@@ -8,6 +8,7 @@ Phong::Phong(float k_a, float k_d, float k_s, float k_e)
     m_kd = k_d;
     m_ks = k_s;
     m_ke = k_e;
+    m_isPhongBlinn = false;
 }
 
 Radiance Phong::illuminateInShadow(Color objectColor)
@@ -39,16 +40,24 @@ Radiance Phong::illuminate(
         float lightRadianceGreen = light->getRadiance().getRadianceGreen();
         float lightRadianceBlue = light->getRadiance().getRadianceBlue();
 
-        Vector sourceVector = Vector(intersection->getIntersectionPoint().getPoint() - light->getPosition().getPoint());
-        sourceVector.normalize();
-
-        Vector reflection = findReflection(sourceVector, intersection->getNormal());
-        sourceVector.scale(-1);
         Vector normal = intersection->getNormal();
         Vector view = intersection->getViewingDirection();
+        Vector sourceVector = Vector(intersection->getIntersectionPoint().getPoint() - light->getPosition().getPoint());
+        sourceVector.normalize();
+        Vector reflection = findReflection(sourceVector, intersection->getNormal());
+        sourceVector.scale(-1);
+        Vector halfVector = Vector(sourceVector.getVector() + view.getVector());
+        halfVector.normalize();
 
         float sourceDotNormal = std::max(0.0f, sourceVector.dot(&normal));
-        float reflectionDotView = pow(std::max(0.0f, reflection.dot(&view)), m_ke);
+
+        float specularPortion;
+
+        if (m_isPhongBlinn) {
+            specularPortion = pow(std::max(0.0f, halfVector.dot(&normal)), m_ke);
+        } else {
+            specularPortion = pow(std::max(0.0f, reflection.dot(&view)), m_ke);
+        }
 
         // Diffuse
         radianceComponentRed += m_kd * lightRadianceRed * objectColor.getRed() * sourceDotNormal;
@@ -56,10 +65,12 @@ Radiance Phong::illuminate(
         radianceComponentBlue += m_kd * lightRadianceBlue * objectColor.getBlue() * sourceDotNormal;
 
         // Specular
-        radianceComponentRed += m_ks * lightRadianceRed * specColor.getRed() * reflectionDotView;
-        radianceComponentGreen += m_ks * lightRadianceGreen * specColor.getGreen() * reflectionDotView;
-        radianceComponentBlue += m_ks * lightRadianceBlue * specColor.getBlue() * reflectionDotView;
+        radianceComponentRed += m_ks * lightRadianceRed * specColor.getRed() * specularPortion;
+        radianceComponentGreen += m_ks * lightRadianceGreen * specColor.getGreen() * specularPortion;
+        radianceComponentBlue += m_ks * lightRadianceBlue * specColor.getBlue() * specularPortion;
     }
 
     return Radiance(radianceComponentRed, radianceComponentGreen, radianceComponentBlue);
 }
+
+void Phong::setPhongBlinn(bool phongBlinn) { m_isPhongBlinn = phongBlinn; }

@@ -1,5 +1,6 @@
 #include "../header/camera.h"
 #include "../header/constants.h"
+#include "../header/util.h"
 #include <fstream>
 #include <iostream>
 
@@ -57,14 +58,59 @@ void Camera::render(World* world)
         // Loop through the film plane
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
-                // 0, 0, 0 since we are now in camera coordinates
-                Ray* ray
-                    = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
-                Radiance radiance = world->spawnRay(ray);
-                radiance.capRadiance();
-                Color c = Color(radiance);
-                outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
-                delete ray;
+                // Supersampling shoots 4 different rays through each pixel of the film plane
+                // These 4 rays are designed to be random in each of the four quadrants of the pixel
+                if (SUPERSAMPLING) {
+                    float pixelWidthOver4 = pixelWidth / 4.0;
+                    float pixelHeightOver4 = pixelHeight / 4.0;
+
+                    // Top Left quadrant
+                    Ray* ray1
+                        = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth - randomBetweenInclusive(pixelWidthOver4),
+                            topLeftRay(1) - i * pixelHeight + randomBetweenInclusive(pixelHeightOver4), topLeftRay(2));
+
+                    // Top Right quadrant
+                    Ray* ray2
+                        = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth + randomBetweenInclusive(pixelWidthOver4),
+                            topLeftRay(1) - i * pixelHeight + randomBetweenInclusive(pixelHeightOver4), topLeftRay(2));
+
+                    // Bottom Left quadrant
+                    Ray* ray3
+                        = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth - randomBetweenInclusive(pixelWidthOver4),
+                            topLeftRay(1) - i * pixelHeight - randomBetweenInclusive(pixelHeightOver4), topLeftRay(2));
+
+                    // Bottom Right quadrant
+                    Ray* ray4
+                        = new Ray(0, 0, 0, topLeftRay(0) + j * pixelWidth + randomBetweenInclusive(pixelWidthOver4),
+                            topLeftRay(1) - i * pixelHeight - randomBetweenInclusive(pixelHeightOver4), topLeftRay(2));
+
+                    Radiance totalRadiance = world->spawnRay(ray1);
+                    totalRadiance.addRadiance(world->spawnRay(ray2));
+                    totalRadiance.addRadiance(world->spawnRay(ray3));
+                    totalRadiance.addRadiance(world->spawnRay(ray4));
+
+                    // Averaging the radiances
+                    totalRadiance.scaleRadiance(0.25);
+                    totalRadiance.capRadiance();
+
+                    Color c = Color(totalRadiance);
+                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+
+                    delete ray1;
+                    delete ray2;
+                    delete ray3;
+                    delete ray4;
+
+                } else {
+                    // 0, 0, 0 since we are now in camera coordinates
+                    Ray* ray = new Ray(
+                        0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
+                    Radiance radiance = world->spawnRay(ray);
+                    radiance.capRadiance();
+                    Color c = Color(radiance);
+                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                    delete ray;
+                }
             }
             outfile << std::endl;
         }

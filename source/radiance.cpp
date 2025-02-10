@@ -35,3 +35,17 @@ void Radiance::capRadiance()
         m_blue = MAXIMUM_IRRADIANCE;
     }
 }
+
+void Radiance::addRadiance(Radiance r)
+{
+    m_red += r.getRadianceRed();
+    m_green += r.getRadianceGreen();
+    m_blue += r.getRadianceBlue();
+}
+
+void Radiance::scaleRadiance(float scale)
+{
+    m_red *= scale;
+    m_green *= scale;
+    m_blue *= scale;
+}

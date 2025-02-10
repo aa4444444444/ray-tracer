@@ -1,8 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const int IMAGE_WIDTH = 512;
-const int IMAGE_HEIGHT = 368;
+const int IMAGE_WIDTH = 1024;
+const int IMAGE_HEIGHT = 736;
 const float FOCAL_LENGTH = 0.5;
 const float FILM_PLANE_WIDTH = 1.33;
 const float FILM_PLANE_HEIGHT = 1;
@@ -19,5 +19,6 @@ const float MAXIMUM_IRRADIANCE = 100.0;
 const float BACKGROUND_RADIANCE_RED = 25.49;
 const float BACKGROUND_RADIANCE_GREEN = 60.39;
 const float BACKGROUND_RADIANCE_BLUE = 95.29;
+const bool SUPERSAMPLING = true;
 
 #endif
