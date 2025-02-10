@@ -1,4 +1,5 @@
 #include "../header/phong.h"
+#include "../header/object.h"
 #include "../header/util.h"
 #include <iostream>
 
@@ -11,27 +12,18 @@ Phong::Phong(float k_a, float k_d, float k_s, float k_e)
     m_isPhongBlinn = false;
 }
 
-Radiance Phong::illuminateInShadow(Color objectColor)
-{
-    // Just Ambient Component
-    float radianceComponentRed = m_ka * objectColor.getRed() * BACKGROUND_RADIANCE_RED;
-    float radianceComponentGreen = m_ka * objectColor.getGreen() * BACKGROUND_RADIANCE_GREEN;
-    float radianceComponentBlue = m_ka * objectColor.getBlue() * BACKGROUND_RADIANCE_BLUE;
-
-    return Radiance(radianceComponentRed, radianceComponentGreen, radianceComponentBlue);
-}
-
-Radiance Phong::illuminate(
-    Color objectColor, Color specColor, Intersection* intersection, std::vector<LightSource*> lightSources)
+Radiance Phong::illuminate(Intersection* intersection)
 {
 
-    // std::cout << objectColor.getRed255() << " " << objectColor.getGreen255() << " " << objectColor.getBlue255()
-    //           << std::endl;
+    Color objectColor = intersection->getObject()->getColor();
+    Color specColor = intersection->getObject()->getSpecColor();
 
     // Ambient Component
     float radianceComponentRed = m_ka * objectColor.getRed() * BACKGROUND_RADIANCE_RED;
     float radianceComponentGreen = m_ka * objectColor.getGreen() * BACKGROUND_RADIANCE_GREEN;
     float radianceComponentBlue = m_ka * objectColor.getBlue() * BACKGROUND_RADIANCE_BLUE;
+
+    std::vector<LightSource*> lightSources = intersection->getLightSources();
 
     // Diffuse & Specular component
     for (size_t i = 0; i < lightSources.size(); i++) {

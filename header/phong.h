@@ -13,10 +13,7 @@ class Phong : public IlluminationModel {
 public:
     Phong(float k_a, float k_d, float k_s, float k_e);
 
-    Radiance illuminate(Color objectColor, Color specColor, Intersection* intersection,
-        std::vector<LightSource*> lightSources) override;
-
-    Radiance illuminateInShadow(Color objectColor) override;
+    Radiance illuminate(Intersection* intersection) override;
 
     void setPhongBlinn(bool phongBlinn);
 

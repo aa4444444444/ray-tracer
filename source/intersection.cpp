@@ -57,3 +57,9 @@ void Intersection::setPerfectMirrorReflectionDirection(Vector reflection)
 Vector Intersection::getViewingDirection() { return m_viewingDirection; }
 
 void Intersection::setViewingDirection(Vector viewing) { m_viewingDirection = Vector(viewing.getVector()); }
+
+std::vector<LightSource*> Intersection::getLightSources() { return m_lightSourceList; }
+void Intersection::setLightSources(std::vector<LightSource*> lights) { m_lightSourceList = lights; }
+
+Object* Intersection::getObject() { return m_object; }
+void Intersection::setObject(Object* object) { m_object = object; }

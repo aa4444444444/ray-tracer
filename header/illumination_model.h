@@ -14,10 +14,7 @@
  */
 class IlluminationModel {
 public:
-    virtual Radiance illuminate(
-        Color objectColor, Color specColor, Intersection* intersection, std::vector<LightSource*> lightSources)
-        = 0;
-    virtual Radiance illuminateInShadow(Color objectColor) = 0;
+    virtual Radiance illuminate(Intersection* intersection) = 0;
     virtual ~IlluminationModel() { };
 };
 

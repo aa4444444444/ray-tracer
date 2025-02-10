@@ -63,6 +63,7 @@ Radiance World::spawnRay(Ray* ray)
     // At this point, closest intersection has been found OR there was no intersection
     // We proceed by applying a BRDF
     if (closestIntersection != nullptr) {
+        closestIntersection->setObject(closestObject);
         Vector viewingDirection = ray->getDirection();
         viewingDirection.normalize();
         viewingDirection.scale(-1);
@@ -95,13 +96,11 @@ Radiance World::spawnRay(Ray* ray)
             }
         }
 
-        if (isShadow) {
-            closestObjectRadiance
-                = closestObject->getIlluminationModel()->illuminateInShadow(closestObject->getColor());
-        } else {
-            closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(
-                closestObject->getColor(), closestObject->getSpecColor(), closestIntersection, m_lightSourceList);
+        if (!isShadow) {
+            closestIntersection->setLightSources(m_lightSourceList);
         }
+
+        closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
 
         delete closestIntersection;
     }
