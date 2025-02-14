@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include "color.h"
+#include "light_source.h"
 #include "object.h"
 #include "ray.h"
 #include <vector>
@@ -17,12 +18,15 @@ public:
     World();
     ~World();
     void addObject(Object* object);
-    Color spawnRay(Ray* ray);
+    void addLightSource(LightSource* lightSource);
+    Radiance spawnRay(Ray* ray);
     void transform(Object* object, Eigen::Matrix4d transMat);
     void transformAllObjects(Eigen::Matrix4d transMat);
+    void transformLightSources(Eigen::Matrix4d transMat);
 
 private:
     std::vector<Object*> m_objectList;
+    std::vector<LightSource*> m_lightSourceList;
 };
 
 #endif

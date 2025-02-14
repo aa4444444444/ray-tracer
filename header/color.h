@@ -1,6 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+class Radiance;
+
 /**
  * @brief Color.
  *
@@ -8,19 +10,23 @@
  */
 class Color {
 public:
-    Color(short red, short green, short blue);
+    Color(float red, float green, float blue);
     Color();
-    short getRed();
-    short getGreen();
-    short getBlue();
-    void setRed(short red);
-    void setGreen(short green);
-    void setBlue(short blue);
+    Color(Radiance r);
+    float getRed();
+    float getGreen();
+    float getBlue();
+    void setRed(float red);
+    void setGreen(float green);
+    void setBlue(float blue);
+    int getRed255();
+    int getGreen255();
+    int getBlue255();
 
 private:
-    short m_red;
-    short m_green;
-    short m_blue;
+    float m_red;
+    float m_green;
+    float m_blue;
 };
 
 #endif

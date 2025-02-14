@@ -5,12 +5,15 @@ Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
 {
     m_center = Point(centerX, centerY, centerZ);
+    // Defaults to a red sphere with a white spec highlight
+    setColor(Color(1.0, 0.0, 0.0));
+    setSpecColor(Color(1.0, 1.0, 1.0));
     m_radius = radius;
 }
 
 float getDiscriminant(float b, float c) { return b * b - 4 * c; }
 
-Ray* Sphere::intersect(Ray* ray)
+Intersection* Sphere::intersect(Ray* ray)
 {
     Point rayOrigin = ray->getOrigin();
     float x_o = rayOrigin.getPoint()(0);
@@ -55,7 +58,12 @@ Ray* Sphere::intersect(Ray* ray)
     float y_i = (y_o + d_y * omega);
     float z_i = (z_o + d_z * omega);
 
-    return new Ray(x_i, y_i, z_i, (x_i - x_c), (y_i - y_c), (z_i - z_c));
+    Vector normal = Vector((x_i - x_c), (y_i - y_c), (z_i - z_c));
+    normal.normalize();
+
+    Intersection* intersection = new Intersection(Point(x_i, y_i, z_i), normal);
+
+    return intersection;
 }
 
 void Sphere::transform(Eigen::Matrix4d transMat)

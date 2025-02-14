@@ -12,6 +12,7 @@
 class Ray {
 public:
     Ray(float originX, float originY, float originZ, float directionX, float directionY, float directionZ);
+    Ray(Point p, Vector v);
     Point getOrigin();
     Vector getDirection();
 

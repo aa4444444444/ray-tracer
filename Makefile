@@ -17,12 +17,14 @@ TARGET_DEL = main.exe
 define SRCS 
 source/main.cpp source/color.cpp source/point.cpp source/vector.cpp 
 source/ray.cpp source/sphere.cpp source/world.cpp source/camera.cpp
-source/triangle.cpp
+source/triangle.cpp source/intersection.cpp source/radiance.cpp
+source/light_source.cpp source/phong.cpp source/util.cpp
+source/ashikhmin_shirley.cpp
 endef
 
 # Header only files that we depend on
 define DEPS
-header/object.h header/constants.h
+header/object.h header/constants.h header/illumination_model.h
 endef
 
 # Object files
