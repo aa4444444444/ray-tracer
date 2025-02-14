@@ -1,5 +1,6 @@
 #include "../header/color.h"
 #include "../header/constants.h"
+#include "../header/radiance.h"
 
 Color::Color(float red, float green, float blue)
 {

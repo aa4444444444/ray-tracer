@@ -71,8 +71,6 @@ Radiance World::spawnRay(Ray* ray)
 
         bool isShadow = false;
 
-        // std::cout << "Closest Object: " << closestObject << std::endl;
-
         // Looping through the rest of the object list to see if the point is illuminated
         // If not illuminated, point is 'in shadow'
         for (size_t i = 0; i < m_objectList.size(); i++) {

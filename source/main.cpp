@@ -1,3 +1,4 @@
+#include "../header/ashikhmin_shirley.h"
 #include "../header/camera.h"
 #include "../header/color.h"
 #include "../header/constants.h"
@@ -20,10 +21,13 @@ int main(int argc, char* argv[])
 {
 
     // Illumination Models
-    Phong* spherePhong = new Phong(0.9, 0.3, 0.65, 50);
-    spherePhong->setPhongBlinn(true);
-    Phong* sphere2Phong = new Phong(0.9, 0.3, 0.65, 50);
-    sphere2Phong->setPhongBlinn(true);
+
+    // Phong* spherePhong = new Phong(0.9, 0.3, 0.65, 50);
+    // spherePhong->setPhongBlinn(true);
+    // Phong* sphere2Phong = new Phong(0.9, 0.3, 0.65, 50);
+    // sphere2Phong->setPhongBlinn(true);
+    AshikhminShirley* sphereAshikhmin = new AshikhminShirley(100, 100, 0.1f, 0.9f);
+    AshikhminShirley* sphere2Ashikhmin = new AshikhminShirley(100, 100, 0.1f, 0.9f);
     Phong* floorPhong = new Phong(0.2, 0.4, 0.6, 2);
     Phong* floor2Phong = new Phong(0.2, 0.4, 0.6, 2);
 
@@ -31,10 +35,10 @@ int main(int argc, char* argv[])
     // Make sure they're dynamically allocated - they will get destroyed by the world
     Sphere* sphere = new Sphere(0.1, 1, 4.5, 1);
     sphere->setColor(Color(1, 0, 0));
-    sphere->setIlluminationModel(spherePhong);
+    sphere->setIlluminationModel(sphereAshikhmin);
     Sphere* sphere2 = new Sphere(2.3, -0.3, 2.2, 1.3);
     sphere2->setColor(Color(0, 0, 1));
-    sphere2->setIlluminationModel(sphere2Phong);
+    sphere2->setIlluminationModel(sphere2Ashikhmin);
     Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
     floor1->setColor(Color(0, 1, 0));
     floor1->setIlluminationModel(floorPhong);

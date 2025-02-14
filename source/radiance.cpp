@@ -8,6 +8,13 @@ Radiance::Radiance(float radianceRed, float radianceGreen, float radianceBlue)
     m_blue = radianceBlue;
 }
 
+Radiance::Radiance(Color color)
+{
+    m_red = color.getRed() * MAXIMUM_IRRADIANCE;
+    m_green = color.getGreen() * MAXIMUM_IRRADIANCE;
+    m_blue = color.getBlue() * MAXIMUM_IRRADIANCE;
+}
+
 Radiance::Radiance()
 {
     m_red = 0.0;
