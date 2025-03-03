@@ -4,6 +4,7 @@
 #include "light_source.h"
 #include "point.h"
 #include "vector.h"
+#include <Eigen/Dense>
 #include <vector>
 
 class Object;
@@ -16,6 +17,7 @@ public:
     Intersection(Point intersection, Vector normal, Vector light, Vector reflection, Vector viewing);
     Intersection(Point intersection, Vector normal);
     Intersection();
+    Point getTransformedIntersectionPoint(const Eigen::Matrix4d& transMat);
     Point getIntersectionPoint();
     void setIntersectionPoint(Point intersection);
     Vector getNormal();

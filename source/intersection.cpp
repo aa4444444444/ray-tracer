@@ -35,6 +35,13 @@ void Intersection::normalizeAllVectors()
     m_viewingDirection.normalize();
 }
 
+Point Intersection::getTransformedIntersectionPoint(const Eigen::Matrix4d& transMat)
+{
+    Point transformedPoint = Point(m_intersectionPoint.getPoint());
+    transformedPoint.transform(transMat);
+    return transformedPoint;
+}
+
 Point Intersection::getIntersectionPoint() { return m_intersectionPoint; }
 
 void Intersection::setIntersectionPoint(Point intersection) { m_intersectionPoint = Point(intersection.getPoint()); }

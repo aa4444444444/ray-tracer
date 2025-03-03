@@ -1,6 +1,7 @@
 #include "../header/color.h"
 #include "../header/constants.h"
 #include "../header/radiance.h"
+#include <algorithm>
 
 Color::Color(float red, float green, float blue)
 {
@@ -40,3 +41,17 @@ int Color::getRed255() { return static_cast<int>(m_red * 255); }
 int Color::getGreen255() { return static_cast<int>(m_green * 255); }
 
 int Color::getBlue255() { return static_cast<int>(m_blue * 255); }
+
+Color Color::operator*(float scalar) const
+{
+    return Color(std::min(1.0f, std::max(0.0f, m_red * scalar)), std::min(1.0f, std::max(0.0f, m_green * scalar)),
+        std::min(1.0f, std::max(0.0f, m_blue * scalar)));
+}
+
+Color& Color::operator*=(float scalar)
+{
+    m_red = std::min(1.0f, std::max(0.0f, m_red * scalar));
+    m_green = std::min(1.0f, std::max(0.0f, m_green * scalar));
+    m_blue = std::min(1.0f, std::max(0.0f, m_blue * scalar));
+    return *this;
+}

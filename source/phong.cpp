@@ -15,7 +15,13 @@ Phong::Phong(float k_a, float k_d, float k_s, float k_e)
 Radiance Phong::illuminate(Intersection* intersection)
 {
 
-    Color objectColor = intersection->getObject()->getColor();
+    Color objectColor;
+    if (intersection->getObject()->getTexture() != nullptr) {
+        objectColor = intersection->getObject()->getTexture()->getColor(intersection);
+    } else {
+        objectColor = intersection->getObject()->getColor();
+    }
+
     Color specColor = intersection->getObject()->getSpecColor();
 
     // Ambient Component

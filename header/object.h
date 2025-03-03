@@ -5,6 +5,7 @@
 #include "illumination_model.h"
 #include "intersection.h"
 #include "ray.h"
+#include "texture.h"
 #include <string>
 
 /**
@@ -14,6 +15,8 @@ class Object {
 public:
     virtual Intersection* intersect(Ray* ray) = 0;
     virtual void transform(Eigen::Matrix4d transMat) = 0;
+    virtual Eigen::Vector2d getTextureUV(Point intersectionPoint) = 0;
+
     Color getColor() { return m_color; }
     void setColor(Color c)
     {
@@ -30,10 +33,16 @@ public:
     }
     IlluminationModel* getIlluminationModel() { return m_illuminationModel; }
     void setIlluminationModel(IlluminationModel* illuminationModel) { m_illuminationModel = illuminationModel; }
+    Texture* getTexture() { return m_texture; }
+    void setTexture(Texture* texture) { m_texture = texture; }
     virtual ~Object()
     {
         if (m_illuminationModel != nullptr) {
             delete m_illuminationModel;
+        }
+
+        if (m_texture != nullptr) {
+            delete m_texture;
         }
     };
 
@@ -44,7 +53,11 @@ protected:
     // Specular color
     Color m_specColor;
 
+    // BRDF
     IlluminationModel* m_illuminationModel;
+
+    // Texture
+    Texture* m_texture;
 
 private:
     std::string material;
