@@ -32,14 +32,14 @@ int main(int argc, char* argv[])
     // AshikhminShirley* sphere2Ashikhmin = new AshikhminShirley(100, 100, 0.1f, 0.9f);
     Phong* floorPhong = new Phong(0.2, 0.7, 0.3, 2);
     Phong* floor2Phong = new Phong(0.2, 0.7, 0.3, 2);
-    Checkerboard* floorCheckerboard
-        = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f);
-    floorCheckerboard->setPerlinNoise(true);
-    Checkerboard* floor2Checkerboard
-        = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f);
-    floor2Checkerboard->setPerlinNoise(true);
-    // Mandelbrot* floorMandelbrot = new Mandelbrot();
-    // Mandelbrot* floor2Mandelbrot = new Mandelbrot();
+    // Checkerboard* floorCheckerboard
+    //     = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
+    // floorCheckerboard->setPerlinNoise(true);
+    // Checkerboard* floor2Checkerboard
+    //     = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
+    // floor2Checkerboard->setPerlinNoise(true);
+    Mandelbrot* floorMandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
+    Mandelbrot* floor2Mandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
 
     // Create objects here!!!
     // Make sure they're dynamically allocated - they will get destroyed by the world
@@ -54,13 +54,13 @@ int main(int argc, char* argv[])
     Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
     floor1->setColor(Color(0, 1, 0));
     floor1->setIlluminationModel(floorPhong);
-    floor1->setTexture(floorCheckerboard);
+    floor1->setTexture(floorMandelbrot);
     floor1->setTexturePoints(Eigen::Vector2d(0.0f, 0.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(0.0f, 1.0f));
 
     Triangle* floor2 = new Triangle(7, -1.5, -60, -3, -1.5, 10, 7, -1.5, 10);
     floor2->setColor(Color(0, 1, 0));
     floor2->setIlluminationModel(floor2Phong);
-    floor2->setTexture(floor2Checkerboard);
+    floor2->setTexture(floor2Mandelbrot);
     floor2->setTexturePoints(Eigen::Vector2d(0.0f, 1.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(1.0f, 1.0f));
 
     // Create light source here!!!

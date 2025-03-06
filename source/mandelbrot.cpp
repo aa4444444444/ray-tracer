@@ -3,13 +3,8 @@
 #include "../header/object.h"
 #include <iostream>
 
-Mandelbrot::Mandelbrot()
+void Mandelbrot::setupInverseMatrixTransform()
 {
-    m_maxIterations = 100;
-    m_zoom = 1.0;
-    m_offsetX = -1.5;
-    m_offsetY = 0.0;
-
     Point position = Point(CAMERA_POS_X, CAMERA_POS_Y, CAMERA_POS_Z);
     Point lookat = Point(CAMERA_LOOKAT_X, CAMERA_LOOKAT_Y, CAMERA_LOOKAT_Z);
     Vector up = Vector(CAMERA_UP_X, CAMERA_UP_Y, CAMERA_UP_Z);
@@ -28,30 +23,26 @@ Mandelbrot::Mandelbrot()
     m_inverseViewTransform = viewTransform.inverse();
 }
 
-Mandelbrot::Mandelbrot(int maxIterations, double zoom, double offsetX, double offsetY)
+Mandelbrot::Mandelbrot()
+{
+    m_maxIterations = 100;
+    m_zoom = 1.0;
+    m_offsetX = -1.5;
+    m_offsetY = 0.0;
+    m_hueOffset = 180.0;
+
+    setupInverseMatrixTransform();
+}
+
+Mandelbrot::Mandelbrot(int maxIterations, double zoom, double offsetX, double offsetY, float hueOffset)
 {
     m_maxIterations = maxIterations;
     m_zoom = zoom;
     m_offsetX = offsetX;
     m_offsetY = offsetY;
+    m_hueOffset = hueOffset;
 
-    // Calculate the inverse view transform
-    Point position = Point(CAMERA_POS_X, CAMERA_POS_Y, CAMERA_POS_Z);
-    Point lookat = Point(CAMERA_LOOKAT_X, CAMERA_LOOKAT_Y, CAMERA_LOOKAT_Z);
-    Vector up = Vector(CAMERA_UP_X, CAMERA_UP_Y, CAMERA_UP_Z);
-    Vector n(position.getPoint() - lookat.getPoint());
-    n.normalize();
-    Vector u = up.cross(&n);
-    u.normalize();
-    Vector v = n.cross(&u);
-
-    Eigen::Matrix4d viewTransform;
-    viewTransform << u.getVector()(0), u.getVector()(1), u.getVector()(2),
-        (position.getPoint() * -1).dot(u.getVector()), v.getVector()(0), v.getVector()(1), v.getVector()(2),
-        (position.getPoint() * -1).dot(v.getVector()), n.getVector()(0), n.getVector()(1), n.getVector()(2),
-        (position.getPoint() * -1).dot(n.getVector()), 0, 0, 0, 1;
-
-    m_inverseViewTransform = viewTransform.inverse();
+    setupInverseMatrixTransform();
 }
 
 int Mandelbrot::mandelbrotIterations(double x, double y, ImaginaryNumber& z)
@@ -124,5 +115,5 @@ Color Mandelbrot::getColor(Intersection* intersection)
     }
 
     double hue = 360.0 * iterations / (m_maxIterations * 1.0f);
-    return hsvToRgb(hue + 180.0f, 1.0, 1.0);
+    return hsvToRgb(hue + m_hueOffset, 1.0, 1.0);
 }

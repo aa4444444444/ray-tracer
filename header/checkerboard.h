@@ -13,7 +13,7 @@
 class Checkerboard : public Texture {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    Checkerboard(Color color1, Color color2, float width, float height, float checksize);
+    Checkerboard(Color color1, Color color2, float width, float height, float checksize, float noiseScale);
     void setPerlinNoise(bool usePerlin);
     Color getColor(Intersection* intersection) override;
 
@@ -24,6 +24,7 @@ private:
     float m_height;
     bool m_usePerlinNoise;
     float m_checksize;
+    float m_noiseScale;
     Eigen::Matrix4d m_inverseViewTransform;
 };
 

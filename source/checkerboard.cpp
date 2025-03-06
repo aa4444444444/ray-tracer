@@ -3,11 +3,12 @@
 #include "../header/perlin_noise.h"
 #include <random>
 
-Checkerboard::Checkerboard(Color color1, Color color2, float width, float height, float checksize)
+Checkerboard::Checkerboard(Color color1, Color color2, float width, float height, float checksize, float noiseScale)
 {
     m_color1 = color1;
     m_color2 = color2;
     m_checksize = checksize;
+    m_noiseScale = noiseScale;
     m_width = width;
     m_height = height;
 
@@ -53,7 +54,7 @@ Color Checkerboard::getColor(Intersection* intersection)
         int randomSeed = dist(gen);
 
         PerlinNoise perlin(randomSeed);
-        double noiseValue = perlin.noise(textureUV(0) * 1000.0, textureUV(1) * 1000.0, 0.0);
+        double noiseValue = perlin.noise(textureUV(0) * m_noiseScale, textureUV(1) * m_noiseScale, 0.0);
         double variation = 0.5 + (noiseValue * 0.5);
         color *= variation;
     }
