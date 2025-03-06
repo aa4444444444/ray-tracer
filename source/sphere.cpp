@@ -11,6 +11,9 @@ Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     m_radius = radius;
 }
 
+// DOESN'T DO THE RIGHT THING AS OF RIGHT NOW
+Eigen::Vector2d Sphere::getTextureUV(Point intersectionPoint) { return Eigen::Vector2d(1.0f, 1.0f); }
+
 float getDiscriminant(float b, float c) { return b * b - 4 * c; }
 
 Intersection* Sphere::intersect(Ray* ray)

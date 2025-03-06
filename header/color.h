@@ -22,6 +22,8 @@ public:
     int getRed255();
     int getGreen255();
     int getBlue255();
+    Color operator*(float scalar) const; // Scale a color by a float
+    Color& operator*=(float scalar); // In-place scaling
 
 private:
     float m_red;
