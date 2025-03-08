@@ -20,7 +20,8 @@ source/ray.cpp source/sphere.cpp source/world.cpp source/camera.cpp
 source/triangle.cpp source/intersection.cpp source/radiance.cpp
 source/light_source.cpp source/phong.cpp source/util.cpp
 source/ashikhmin_shirley.cpp source/checkerboard.cpp source/perlin_noise.cpp
-source/imaginary_number.cpp source/mandelbrot.cpp
+source/imaginary_number.cpp source/mandelbrot.cpp source/kd_tree_node.cpp
+source/axis_aligned_bounding_box.cpp
 endef
 
 # Header only files that we depend on
