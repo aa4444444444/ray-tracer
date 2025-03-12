@@ -107,3 +107,15 @@ void Triangle::transform(Eigen::Matrix4d transMat)
     Eigen::Vector3d newe2 = m_point2.getPoint() - m_point0.getPoint();
     m_e2.setVector(newe2);
 }
+
+AxisAlignedBoundingBox* Triangle::getAxisAlignedBoundingBox()
+{
+    float xMin = std::min(std::min(m_point0.getPoint()(0), m_point1.getPoint()(0)), m_point2.getPoint()(0));
+    float xMax = std::max(std::max(m_point0.getPoint()(0), m_point1.getPoint()(0)), m_point2.getPoint()(0));
+    float yMin = std::min(std::min(m_point0.getPoint()(1), m_point1.getPoint()(1)), m_point2.getPoint()(1));
+    float yMax = std::max(std::max(m_point0.getPoint()(1), m_point1.getPoint()(1)), m_point2.getPoint()(1));
+    float zMin = std::min(std::min(m_point0.getPoint()(2), m_point1.getPoint()(2)), m_point2.getPoint()(2));
+    float zMax = std::max(std::max(m_point0.getPoint()(2), m_point1.getPoint()(2)), m_point2.getPoint()(2));
+
+    return new AxisAlignedBoundingBox(xMin, xMax, yMin, yMax, zMin, zMax, this);
+}

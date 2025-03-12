@@ -17,6 +17,7 @@ public:
     Intersection* intersect(Ray* ray) override;
     void transform(Eigen::Matrix4d transMat) override;
     Eigen::Vector2d getTextureUV(Point intersectionPoint) override;
+    AxisAlignedBoundingBox* getAxisAlignedBoundingBox() override;
 
 private:
     Point m_center;

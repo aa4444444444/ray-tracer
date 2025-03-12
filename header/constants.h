@@ -20,6 +20,8 @@ const float BACKGROUND_RADIANCE_RED = 25.49;
 const float BACKGROUND_RADIANCE_GREEN = 60.39;
 const float BACKGROUND_RADIANCE_BLUE = 95.29;
 const bool SUPERSAMPLING = true;
+const bool USE_KD_TREES = true;
+const float VOXEL_TERMINAL_VOLUME = 200.0f;
 const float PI = 3.14159265358979323846;
 
 #endif

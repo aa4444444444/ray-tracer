@@ -1,5 +1,4 @@
 #include "../header/sphere.h"
-#include <iostream>
 
 Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
@@ -81,3 +80,10 @@ void Sphere::transform(Eigen::Matrix4d transMat)
 Point Sphere::getCenter() { return m_center; }
 float Sphere::getRadius() { return m_radius; }
 void Sphere::setRadius(float r) { m_radius = r; }
+
+AxisAlignedBoundingBox* Sphere::getAxisAlignedBoundingBox()
+{
+    return new AxisAlignedBoundingBox(m_center.getPoint()(0) - m_radius, m_center.getPoint()(0) + m_radius,
+        m_center.getPoint()(1) - m_radius, m_center.getPoint()(1) + m_radius, m_center.getPoint()(2) - m_radius,
+        m_center.getPoint()(2) + m_radius, this);
+}

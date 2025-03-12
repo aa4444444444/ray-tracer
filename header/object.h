@@ -1,6 +1,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include "axis_aligned_bounding_box.h"
 #include "color.h"
 #include "illumination_model.h"
 #include "intersection.h"
@@ -16,6 +17,7 @@ public:
     virtual Intersection* intersect(Ray* ray) = 0;
     virtual void transform(Eigen::Matrix4d transMat) = 0;
     virtual Eigen::Vector2d getTextureUV(Point intersectionPoint) = 0;
+    virtual AxisAlignedBoundingBox* getAxisAlignedBoundingBox() = 0;
 
     Color getColor() { return m_color; }
     void setColor(Color c)

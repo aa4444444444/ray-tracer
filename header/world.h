@@ -2,10 +2,21 @@
 #define WORLD_H
 
 #include "color.h"
+#include "kd_tree_node.h"
 #include "light_source.h"
 #include "object.h"
 #include "ray.h"
 #include <vector>
+
+struct FinalRadiance {
+    FinalRadiance(Radiance rad, bool intersectionFound)
+        : m_radiance(rad)
+        , m_intersectionFound(intersectionFound)
+    {
+    }
+    Radiance m_radiance;
+    bool m_intersectionFound;
+};
 
 /**
  * @brief The world seen by the camera.
@@ -20,13 +31,18 @@ public:
     void addObject(Object* object);
     void addLightSource(LightSource* lightSource);
     Radiance spawnRay(Ray* ray);
+    FinalRadiance traverseKDTree(Ray* ray, KdTreeNode* treeNode);
     void transform(Object* object, Eigen::Matrix4d transMat);
     void transformAllObjects(Eigen::Matrix4d transMat);
     void transformLightSources(Eigen::Matrix4d transMat);
+    void buildKDTree();
+    KdTreeNode* getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives);
 
 private:
     std::vector<Object*> m_objectList;
     std::vector<LightSource*> m_lightSourceList;
+    std::vector<AxisAlignedBoundingBox*> m_aabbList;
+    KdTreeNode* m_sceneKDTree;
 };
 
 #endif
