@@ -48,6 +48,8 @@ void Camera::render(World* world)
             world->buildKDTree();
         }
 
+        std::cout << "Made it past building the tree" << std::endl;
+
         // world location of top-left pixel of film plane is (-w/2, h/2, f)
         // where w = width of film plane, h = height of film plane, f = focal length
         // to shoot a ray through the center of this pixel, we shift right and down

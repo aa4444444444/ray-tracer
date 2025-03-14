@@ -76,7 +76,6 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
                 }
             }
         }
-
         // At this point, closest intersection has been found OR there was no intersection
         // We proceed by applying a BRDF
         if (closestIntersection != nullptr) {
@@ -90,26 +89,26 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
 
             // Looping through the rest of the object list to see if the point is illuminated
             // If not illuminated, point is 'in shadow'
-            for (size_t i = 0; i < m_objectList.size(); i++) {
-                if (closestObject != m_objectList[i]) {
+            // for (size_t i = 0; i < m_objectList.size(); i++) {
+            //     if (closestObject != m_objectList[i]) {
 
-                    // As of right now, only checks the first light source
-                    LightSource* light = m_lightSourceList[0];
-                    Vector sourceVector = Vector(
-                        light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
-                    sourceVector.normalize();
-                    Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
+            //         // As of right now, only checks the first light source
+            //         LightSource* light = m_lightSourceList[0];
+            //         Vector sourceVector = Vector(
+            //             light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
+            //         sourceVector.normalize();
+            //         Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
 
-                    Intersection* lightObjectIntersection = m_objectList[i]->intersect(lightSourceRay);
+            //         Intersection* lightObjectIntersection = m_objectList[i]->intersect(lightSourceRay);
 
-                    if (lightObjectIntersection != nullptr) {
-                        isShadow = true;
-                    }
+            //         if (lightObjectIntersection != nullptr) {
+            //             isShadow = true;
+            //         }
 
-                    delete lightObjectIntersection;
-                    delete lightSourceRay;
-                }
-            }
+            //         delete lightObjectIntersection;
+            //         delete lightSourceRay;
+            //     }
+            // }
 
             if (!isShadow) {
                 closestIntersection->setLightSources(m_lightSourceList);
@@ -119,7 +118,6 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
 
             delete closestIntersection;
         }
-
         return FinalRadiance(closestObjectRadiance, (closestIntersection == nullptr ? false : true));
     }
 
@@ -169,6 +167,15 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
 Radiance World::spawnRay(Ray* ray)
 {
     if (USE_KD_TREES) {
+        int dimSplit = (m_sceneKDTree->getDimSplit() == KdTreeNode::DimSplit::X)
+            ? 0
+            : ((m_sceneKDTree->getDimSplit() == KdTreeNode::DimSplit::Y) ? 1 : 2);
+        if (m_sceneKDTree->getAxisAlignedBoundingBox()
+                ->intersectRay(ray, m_sceneKDTree->getSplitDistance(), dimSplit)
+                .m_intersects
+            == false) {
+            return Radiance(BACKGROUND_RADIANCE_RED, BACKGROUND_RADIANCE_GREEN, BACKGROUND_RADIANCE_BLUE);
+        }
         return traverseKDTree(ray, m_sceneKDTree).m_radiance;
     } else {
         Intersection* closestIntersection = nullptr;
@@ -318,6 +325,7 @@ void World::buildKDTree()
         sceneKDTree->setSplitDistance((xMin + xMax) / 2.0f);
         sceneKDTree = getNode(sceneKDTree, m_aabbList);
 
+        std::cout << m_objectList.size() << std::endl;
         std::cout << sceneKDTree->getSize() << std::endl;
     }
     m_sceneKDTree = sceneKDTree;

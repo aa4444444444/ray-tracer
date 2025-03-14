@@ -84,6 +84,16 @@ Intersection* Triangle::intersect(Ray* ray)
     }
 }
 
+void Triangle::scale(float scaleAmount)
+{
+    m_point0.scale(scaleAmount);
+    m_point1.scale(scaleAmount);
+    m_point2.scale(scaleAmount);
+
+    m_e1 = Vector(m_point1.getPoint() - m_point0.getPoint());
+    m_e2 = Vector(m_point2.getPoint() - m_point0.getPoint());
+}
+
 void Triangle::transform(Eigen::Matrix4d transMat)
 {
     Eigen::Vector4d augmentedPoint0(m_point0.getPoint()(0), m_point0.getPoint()(1), m_point0.getPoint()(2), 1);

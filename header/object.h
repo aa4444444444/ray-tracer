@@ -56,10 +56,10 @@ protected:
     Color m_specColor;
 
     // BRDF
-    IlluminationModel* m_illuminationModel;
+    IlluminationModel* m_illuminationModel = nullptr;
 
     // Texture
-    Texture* m_texture;
+    Texture* m_texture = nullptr;
 
 private:
     std::string material;
