@@ -94,7 +94,14 @@ void Triangle::scale(float scaleAmount)
     m_e2 = Vector(m_point2.getPoint() - m_point0.getPoint());
 }
 
-void Triangle::transform(Eigen::Matrix4d transMat)
+void Triangle::translate(const Eigen::Vector3d& translate)
+{
+    m_point0.translate(translate);
+    m_point1.translate(translate);
+    m_point2.translate(translate);
+}
+
+void Triangle::transform(const Eigen::Matrix4d& transMat)
 {
     Eigen::Vector4d augmentedPoint0(m_point0.getPoint()(0), m_point0.getPoint()(1), m_point0.getPoint()(2), 1);
     Eigen::Vector4d transformedPoint0 = transMat * augmentedPoint0;

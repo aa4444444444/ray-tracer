@@ -34,19 +34,9 @@ void AxisAlignedBoundingBox::setObject(Object* object) { m_Object = object; }
 float AxisAlignedBoundingBox::getVolume() { return (m_xMax - m_xMin) * (m_yMax - m_yMin) * (m_zMax - m_zMin); }
 bool AxisAlignedBoundingBox::intersect(AxisAlignedBoundingBox* aabb)
 {
-    if (m_xMin > aabb->getXMax() || aabb->getXMin() > m_xMax) {
-        return false;
-    }
-
-    if (m_yMin > aabb->getYMax() || aabb->getYMin() > m_yMax) {
-        return false;
-    }
-
-    if (m_zMin > aabb->getZMax() || aabb->getZMin() > m_zMax) {
-        return false;
-    }
-
-    return true;
+    return (m_xMin <= aabb->getXMax() && m_xMax >= aabb->getXMin())
+        && (m_yMin <= aabb->getYMax() && m_yMax >= aabb->getYMin())
+        && (m_zMin <= aabb->getZMax() && m_zMax >= aabb->getZMin());
 }
 
 bool AxisAlignedBoundingBox::intersectionInsideBox(Intersection* intersection)

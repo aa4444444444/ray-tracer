@@ -93,6 +93,7 @@ void KdTreeNode::printTreeNode(const std::string& prefix, KdTreeNode* node, bool
         // print the value of the node
         if (node->getAxisAlignedBoundingBox() != nullptr) {
             node->getAxisAlignedBoundingBox()->printAABB();
+            std::cout << "Size of primitives: " << node->getObjectList().size() << std::endl;
         }
 
         // enter the next tree level - left and right branch

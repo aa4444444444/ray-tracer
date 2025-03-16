@@ -16,7 +16,8 @@ public:
         const Eigen::Vector2d& texturePoint3);
     Intersection* intersect(Ray* ray) override;
     void scale(float scaleAmount);
-    void transform(Eigen::Matrix4d transMat) override;
+    void transform(const Eigen::Matrix4d& transMat) override;
+    void translate(const Eigen::Vector3d& translate);
     Eigen::Vector2d getTextureUV(Point intersectionPoint) override;
     AxisAlignedBoundingBox* getAxisAlignedBoundingBox() override;
 

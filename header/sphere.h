@@ -15,7 +15,7 @@ public:
     float getRadius();
     void setRadius(float r);
     Intersection* intersect(Ray* ray) override;
-    void transform(Eigen::Matrix4d transMat) override;
+    void transform(const Eigen::Matrix4d& transMat) override;
     Eigen::Vector2d getTextureUV(Point intersectionPoint) override;
     AxisAlignedBoundingBox* getAxisAlignedBoundingBox() override;
 

@@ -25,12 +25,43 @@ World::~World()
         }
     });
 
+    std::for_each(m_plyModels.begin(), m_plyModels.end(), [](const auto& elem) {
+        if (elem != nullptr) {
+            delete elem;
+        }
+    });
+
+    std::for_each(m_modelList.begin(), m_modelList.end(), [](const auto& elem) {
+        if (elem != nullptr) {
+            delete elem;
+        }
+    });
+
     if (m_sceneKDTree != nullptr) {
         delete m_sceneKDTree;
     }
 }
 
-void World::addObject(Object* object) { m_objectList.push_back(object); }
+void World::addPrimitiveObject(Object* object) { m_objectList.push_back(object); }
+
+void World::addModelObject(Object* object)
+{
+    std::vector<Object*>* model = new std::vector<Object*> { object };
+    m_modelList.push_back(model);
+    object->setModelAddress(model);
+    m_objectList.push_back(object);
+}
+
+void World::addPlyModel(PlyModel* plyModel)
+{
+    std::vector<Object*>* model = new std::vector<Object*>(plyModel->getPrimitives());
+    m_modelList.push_back(model);
+    for (const auto& elem : *model) {
+        elem->setModelAddress(model);
+        m_objectList.push_back(elem);
+    }
+    m_plyModels.push_back(plyModel);
+}
 
 void World::addLightSource(LightSource* lightSource) { m_lightSourceList.push_back(lightSource); }
 
@@ -48,6 +79,8 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
 
         // Origin
         Point coordOrigin(0, 0, 0);
+
+        bool intersectionFound = false;
 
         // Loop through all the objects in the AABB
         for (size_t i = 0; i < treeNode->getObjectList().size(); i++) {
@@ -79,6 +112,7 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
         // At this point, closest intersection has been found OR there was no intersection
         // We proceed by applying a BRDF
         if (closestIntersection != nullptr) {
+            intersectionFound = true;
             closestIntersection->setObject(closestObject);
             Vector viewingDirection = ray->getDirection();
             viewingDirection.normalize();
@@ -88,37 +122,49 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
             bool isShadow = false;
 
             // Looping through the rest of the object list to see if the point is illuminated
-            // If not illuminated, point is 'in shadow'
-            // for (size_t i = 0; i < m_objectList.size(); i++) {
-            //     if (closestObject != m_objectList[i]) {
+            // If not illuminated, point is 'in shadow'.
+            // We want to loop through the 'model objects' otherwise this will take forever to
+            // run.
+            for (size_t i = 0; i < m_modelList.size(); i++) {
+                // If the object isn't in the model
 
-            //         // As of right now, only checks the first light source
-            //         LightSource* light = m_lightSourceList[0];
-            //         Vector sourceVector = Vector(
-            //             light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
-            //         sourceVector.normalize();
-            //         Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
+                if (closestObject->getModelAddress() != m_modelList[i]) {
+                    // std::cout << "Object model address: " << closestObject->getModelAddress() << std::endl;
+                    // std::cout << "Model address: " << m_modelList[i] << std::endl;
 
-            //         Intersection* lightObjectIntersection = m_objectList[i]->intersect(lightSourceRay);
+                    // As of right now, only checks the first light source
+                    LightSource* light = m_lightSourceList[0];
+                    Vector sourceVector = Vector(
+                        light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
+                    sourceVector.normalize();
+                    Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
 
-            //         if (lightObjectIntersection != nullptr) {
-            //             isShadow = true;
-            //         }
+                    for (size_t j = 0; j < m_modelList[i]->size(); j++) {
+                        Intersection* lightObjectIntersection = m_modelList[i]->at(j)->intersect(lightSourceRay);
 
-            //         delete lightObjectIntersection;
-            //         delete lightSourceRay;
-            //     }
-            // }
+                        if (lightObjectIntersection != nullptr) {
+                            isShadow = true;
+                            delete lightObjectIntersection;
+                            delete lightSourceRay;
+                            goto objectInShadowKD;
+                        }
 
+                        delete lightObjectIntersection;
+                    }
+
+                    delete lightSourceRay;
+                }
+            }
+
+        objectInShadowKD:
             if (!isShadow) {
                 closestIntersection->setLightSources(m_lightSourceList);
             }
 
             closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
-
             delete closestIntersection;
         }
-        return FinalRadiance(closestObjectRadiance, (closestIntersection == nullptr ? false : true));
+        return FinalRadiance(closestObjectRadiance, intersectionFound);
     }
 
     // We get here if we're not a leaf
@@ -129,37 +175,42 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
     bool rayMovingPositive = (ray->getDirection().getVector()(dimSplit) > 0);
     AABBIntersection aabbIntersection
         = treeNode->getAxisAlignedBoundingBox()->intersectRay(ray, splitDistance, dimSplit);
-    if (aabbIntersection.m_t <= aabbIntersection.m_tStart) {
-        // Case 1: t <= tStart <= tEnd --> Cull front side
-        if (rayMovingPositive) {
-            return traverseKDTree(ray, treeNode->getBackNode());
-        } else {
-            return traverseKDTree(ray, treeNode->getFrontNode());
-        }
-
-    } else if (aabbIntersection.m_t >= aabbIntersection.m_tEnd) {
-        // Case 2: tStart <= tEnd <= t --> Cull back side
-        if (rayMovingPositive) {
-            return traverseKDTree(ray, treeNode->getFrontNode());
-        } else {
-            return traverseKDTree(ray, treeNode->getBackNode());
-        }
+    if (aabbIntersection.m_intersects == false) {
+        return FinalRadiance(
+            Radiance(BACKGROUND_RADIANCE_RED, BACKGROUND_RADIANCE_GREEN, BACKGROUND_RADIANCE_BLUE), false);
     } else {
-        // Case 3: Traverse both sides in turn
-        if (rayMovingPositive) {
-            FinalRadiance frontTest = traverseKDTree(ray, treeNode->getFrontNode());
-            if (frontTest.m_intersectionFound == true) {
-                // Early ray termination
-                return frontTest;
+        if (aabbIntersection.m_t <= aabbIntersection.m_tStart) {
+            // Case 1: t <= tStart <= tEnd --> Cull front side
+            if (rayMovingPositive) {
+                return traverseKDTree(ray, treeNode->getBackNode());
+            } else {
+                return traverseKDTree(ray, treeNode->getFrontNode());
             }
-            return traverseKDTree(ray, treeNode->getBackNode());
+
+        } else if (aabbIntersection.m_t >= aabbIntersection.m_tEnd) {
+            // Case 2: tStart <= tEnd <= t --> Cull back side
+            if (rayMovingPositive) {
+                return traverseKDTree(ray, treeNode->getFrontNode());
+            } else {
+                return traverseKDTree(ray, treeNode->getBackNode());
+            }
         } else {
-            FinalRadiance frontTest = traverseKDTree(ray, treeNode->getBackNode());
-            if (frontTest.m_intersectionFound == true) {
-                // Early ray termination
-                return frontTest;
+            // Case 3: Traverse both sides in turn
+            if (rayMovingPositive) {
+                FinalRadiance frontTest = traverseKDTree(ray, treeNode->getFrontNode());
+                if (frontTest.m_intersectionFound == true) {
+                    // Early ray termination
+                    return frontTest;
+                }
+                return traverseKDTree(ray, treeNode->getBackNode());
+            } else {
+                FinalRadiance frontTest = traverseKDTree(ray, treeNode->getBackNode());
+                if (frontTest.m_intersectionFound == true) {
+                    // Early ray termination
+                    return frontTest;
+                }
+                return traverseKDTree(ray, treeNode->getFrontNode());
             }
-            return traverseKDTree(ray, treeNode->getFrontNode());
         }
     }
 }
@@ -167,16 +218,8 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
 Radiance World::spawnRay(Ray* ray)
 {
     if (USE_KD_TREES) {
-        int dimSplit = (m_sceneKDTree->getDimSplit() == KdTreeNode::DimSplit::X)
-            ? 0
-            : ((m_sceneKDTree->getDimSplit() == KdTreeNode::DimSplit::Y) ? 1 : 2);
-        if (m_sceneKDTree->getAxisAlignedBoundingBox()
-                ->intersectRay(ray, m_sceneKDTree->getSplitDistance(), dimSplit)
-                .m_intersects
-            == false) {
-            return Radiance(BACKGROUND_RADIANCE_RED, BACKGROUND_RADIANCE_GREEN, BACKGROUND_RADIANCE_BLUE);
-        }
         return traverseKDTree(ray, m_sceneKDTree).m_radiance;
+
     } else {
         Intersection* closestIntersection = nullptr;
 
@@ -225,8 +268,9 @@ Radiance World::spawnRay(Ray* ray)
 
             // Looping through the rest of the object list to see if the point is illuminated
             // If not illuminated, point is 'in shadow'
-            for (size_t i = 0; i < m_objectList.size(); i++) {
-                if (closestObject != m_objectList[i]) {
+            for (size_t i = 0; i < m_modelList.size(); i++) {
+                // If the object isn't in the model
+                if (closestObject->getModelAddress() != m_modelList[i]) {
 
                     // As of right now, only checks the first light source
                     LightSource* light = m_lightSourceList[0];
@@ -235,17 +279,24 @@ Radiance World::spawnRay(Ray* ray)
                     sourceVector.normalize();
                     Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
 
-                    Intersection* lightObjectIntersection = m_objectList[i]->intersect(lightSourceRay);
+                    for (size_t j = 0; j < m_modelList[i]->size(); j++) {
+                        Intersection* lightObjectIntersection = m_modelList[i]->at(j)->intersect(lightSourceRay);
 
-                    if (lightObjectIntersection != nullptr) {
-                        isShadow = true;
+                        if (lightObjectIntersection != nullptr) {
+                            isShadow = true;
+                            delete lightObjectIntersection;
+                            delete lightSourceRay;
+                            goto objectInShadow;
+                        }
+
+                        delete lightObjectIntersection;
                     }
 
-                    delete lightObjectIntersection;
                     delete lightSourceRay;
                 }
             }
 
+        objectInShadow:
             if (!isShadow) {
                 closestIntersection->setLightSources(m_lightSourceList);
             }
@@ -323,10 +374,11 @@ void World::buildKDTree()
         sceneKDTree->setAxisAlignedBoundingBox(sceneAABB);
         sceneKDTree->setDimSplit(KdTreeNode::DimSplit::X);
         sceneKDTree->setSplitDistance((xMin + xMax) / 2.0f);
+
         sceneKDTree = getNode(sceneKDTree, m_aabbList);
 
-        std::cout << m_objectList.size() << std::endl;
-        std::cout << sceneKDTree->getSize() << std::endl;
+        std::cout << "Number of objects in scene: " << m_objectList.size() << std::endl;
+        std::cout << "Size of KD Tree: " << sceneKDTree->getSize() << std::endl;
     }
     m_sceneKDTree = sceneKDTree;
 }
@@ -335,11 +387,19 @@ KdTreeNode* World::getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox
 {
     AxisAlignedBoundingBox* aabb = voxel->getAxisAlignedBoundingBox();
 
-    // terminal
-    if (aabb->getVolume() < VOXEL_TERMINAL_VOLUME) {
-        voxel->setObjectList(primitives);
-        voxel->setIsLeaf(true);
-        return voxel;
+    // termination
+    if (TERMINATE_WITH_VOLUME) {
+        if (aabb->getVolume() < VOXEL_TERMINAL_VOLUME) {
+            voxel->setObjectList(primitives);
+            voxel->setIsLeaf(true);
+            return voxel;
+        }
+    } else if (TERMINATE_WITH_PRIMITIVES) {
+        if (primitives.size() <= MAX_PRIMITIVES_PER_VOXEL) {
+            voxel->setObjectList(primitives);
+            voxel->setIsLeaf(true);
+            return voxel;
+        }
     }
 
     float partitioningPlane = voxel->getSplitDistance();

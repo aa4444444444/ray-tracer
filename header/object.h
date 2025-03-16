@@ -15,7 +15,7 @@
 class Object {
 public:
     virtual Intersection* intersect(Ray* ray) = 0;
-    virtual void transform(Eigen::Matrix4d transMat) = 0;
+    virtual void transform(const Eigen::Matrix4d& transMat) = 0;
     virtual Eigen::Vector2d getTextureUV(Point intersectionPoint) = 0;
     virtual AxisAlignedBoundingBox* getAxisAlignedBoundingBox() = 0;
 
@@ -37,6 +37,8 @@ public:
     void setIlluminationModel(IlluminationModel* illuminationModel) { m_illuminationModel = illuminationModel; }
     Texture* getTexture() { return m_texture; }
     void setTexture(Texture* texture) { m_texture = texture; }
+    void* getModelAddress() { return m_modelAddress; }
+    void setModelAddress(void* modelAddress) { m_modelAddress = modelAddress; }
     virtual ~Object()
     {
         if (m_illuminationModel != nullptr) {
@@ -60,6 +62,8 @@ protected:
 
     // Texture
     Texture* m_texture = nullptr;
+
+    void* m_modelAddress = nullptr;
 
 private:
     std::string material;

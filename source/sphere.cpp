@@ -68,12 +68,13 @@ Intersection* Sphere::intersect(Ray* ray)
     return intersection;
 }
 
-void Sphere::transform(Eigen::Matrix4d transMat)
+void Sphere::transform(const Eigen::Matrix4d& transMat)
 {
 
     Eigen::Vector4d augmented(m_center.getPoint()(0), m_center.getPoint()(1), m_center.getPoint()(2), 1);
     Eigen::Vector4d transformed = transMat * augmented;
-    Eigen::Vector3d newCenter(transformed(0), transformed(1), transformed(2));
+    Eigen::Vector3d newCenter(
+        transformed(0) / transformed(3), transformed(1) / transformed(3), transformed(2) / transformed(3));
     m_center.setPoint(newCenter);
 }
 

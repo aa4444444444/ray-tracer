@@ -5,6 +5,7 @@
 #include "kd_tree_node.h"
 #include "light_source.h"
 #include "object.h"
+#include "ply_model.h"
 #include "ray.h"
 #include <vector>
 
@@ -28,7 +29,9 @@ class World {
 public:
     World();
     ~World();
-    void addObject(Object* object);
+    void addPrimitiveObject(Object* object);
+    void addModelObject(Object* object);
+    void addPlyModel(PlyModel* plyModel);
     void addLightSource(LightSource* lightSource);
     Radiance spawnRay(Ray* ray);
     FinalRadiance traverseKDTree(Ray* ray, KdTreeNode* treeNode);
@@ -39,6 +42,8 @@ public:
     KdTreeNode* getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives);
 
 private:
+    std::vector<PlyModel*> m_plyModels;
+    std::vector<std::vector<Object*>*> m_modelList;
     std::vector<Object*> m_objectList;
     std::vector<LightSource*> m_lightSourceList;
     std::vector<AxisAlignedBoundingBox*> m_aabbList;
