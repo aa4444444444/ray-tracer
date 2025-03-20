@@ -18,6 +18,7 @@ public:
     void scale(float scaleAmount);
     void transform(const Eigen::Matrix4d& transMat) override;
     void translate(const Eigen::Vector3d& translate);
+    void rotate(const Eigen::Vector3d& rotate);
     Eigen::Vector2d getTextureUV(Point intersectionPoint) override;
     AxisAlignedBoundingBox* getAxisAlignedBoundingBox() override;
 

@@ -33,8 +33,8 @@ void addBunny(World* world)
 
     std::vector<std::vector<int>> indices = plyIn.getElement("face").getListProperty<int>("vertex_indices");
 
-    PlyModel* p = new PlyModel(
-        vertexX, vertexY, vertexZ, indices, Color(1.0f, 0.0f, 0.0f), 40.0f, Eigen::Vector3d(0, -3.0f, 0));
+    PlyModel* p = new PlyModel(vertexX, vertexY, vertexZ, indices, Color(1.0f, 0.0f, 0.0f), 40.0f,
+        Eigen::Vector3d(0, 90, 0), Eigen::Vector3d(0, -3.0f, 0));
 
     world->addPlyModel(p);
 }
@@ -42,7 +42,7 @@ void addBunny(World* world)
 void addMahoraga(World* world)
 {
     // Loading in PLY files
-    happly::PLYData plyIn("plys/mahoraga/mahoraga.ply");
+    happly::PLYData plyIn("plys/mahoraga/mahoraga2.ply");
 
     // Get data from the object
     std::vector<float> vertexX = plyIn.getElement("vertex").getProperty<float>("x");
@@ -51,8 +51,8 @@ void addMahoraga(World* world)
 
     std::vector<std::vector<int>> indices = plyIn.getElement("face").getListProperty<int>("vertex_index");
 
-    PlyModel* p
-        = new PlyModel(vertexX, vertexY, vertexZ, indices, Color(1.0f, 1.0f, 1.0f), 0.1f, Eigen::Vector3d(0, -3.0f, 0));
+    PlyModel* p = new PlyModel(vertexX, vertexY, vertexZ, indices, Color(1.0f, 1.0f, 1.0f), 0.3f,
+        Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, -3.0f, 0));
 
     world->addPlyModel(p);
 }
@@ -117,8 +117,8 @@ int main(int argc, char* argv[])
     World* world = new World();
 
     // addBallScene(world);
-    // addBunny(world);
-    addMahoraga(world);
+    addBunny(world);
+    // addMahoraga(world);
 
     // Create light source here!!!
     // Light sources get destroyed by the world

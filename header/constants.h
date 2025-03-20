@@ -26,11 +26,11 @@ const bool SUPERSAMPLING = false;
 
 // KD-Tree Stuff
 const bool USE_KD_TREES = true;
-const bool TERMINATE_WITH_LEVELS = false;
+const bool TERMINATE_WITH_LEVELS = true;
 const bool TERMINATE_WITH_VOLUME = true;
 const bool TERMINATE_WITH_PRIMITIVES = true;
-const float VOXEL_TERMINAL_VOLUME = 5.0f;
+const float VOXEL_TERMINAL_VOLUME = 0.1f;
 const int MAX_PRIMITIVES_PER_VOXEL = 5;
-const int KD_MAX_RECURSION_LEVEL = 9;
+const int KD_MAX_RECURSION_LEVEL = 10;
 
 #endif

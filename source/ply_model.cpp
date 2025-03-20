@@ -4,7 +4,8 @@
 
 // TODO: Give user the ability to customize the BRDF and stuff
 PlyModel::PlyModel(std::vector<float> vertexX, std::vector<float> vertexY, std::vector<float> vertexZ,
-    std::vector<std::vector<int>> indices, Color c, float scaleAmount, const Eigen::Vector3d& translateVec)
+    std::vector<std::vector<int>> indices, Color c, float scaleAmount, const Eigen::Vector3d& rotateVec,
+    const Eigen::Vector3d& translateVec)
 {
     for (size_t i = 0; i < indices.size(); i++) {
         int triangleIndex1 = indices[i][0];
@@ -21,6 +22,7 @@ PlyModel::PlyModel(std::vector<float> vertexX, std::vector<float> vertexY, std::
         triangle->setColor(c);
         triangle->setIlluminationModel(phong);
         triangle->scale(scaleAmount);
+        triangle->rotate(rotateVec);
         triangle->translate(translateVec);
 
         m_primitives.push_back(triangle);
