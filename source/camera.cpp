@@ -68,6 +68,7 @@ void Camera::render(World* world)
         // Loop through the film plane
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
+
                 // Supersampling shoots 4 different rays through each pixel of the film plane
                 // These 4 rays are designed to be random in each of the four quadrants of the pixel
                 if (SUPERSAMPLING) {

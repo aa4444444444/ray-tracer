@@ -13,7 +13,7 @@ Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
 // DOESN'T DO THE RIGHT THING AS OF RIGHT NOW
 Eigen::Vector2d Sphere::getTextureUV(Point intersectionPoint) { return Eigen::Vector2d(1.0f, 1.0f); }
 
-float getDiscriminant(float b, float c) { return b * b - 4 * c; }
+float getDiscriminant(float b, float c) { return b * b - 4.0f * c; }
 
 Intersection* Sphere::intersect(Ray* ray)
 {
@@ -45,8 +45,8 @@ Intersection* Sphere::intersect(Ray* ray)
     } else if (discriminant == 0) {
         omega = -1 * b / 2.0;
     } else {
-        float root_1 = (-1 * b + discriminant) / 2.0;
-        float root_2 = (-1 * b - discriminant) / 2.0;
+        float root_1 = (-1 * b + sqrt(discriminant)) / 2.0;
+        float root_2 = (-1 * b - sqrt(discriminant)) / 2.0;
         if (root_1 < 0) {
             omega = root_2;
         } else if (root_2 < 0) {
@@ -76,6 +76,8 @@ void Sphere::transform(const Eigen::Matrix4d& transMat)
     Eigen::Vector3d newCenter(
         transformed(0) / transformed(3), transformed(1) / transformed(3), transformed(2) / transformed(3));
     m_center.setPoint(newCenter);
+    std::cout << "Transformed center: " << newCenter(0) << ", " << newCenter(1) << ", " << newCenter(2) << std::endl;
+    std::cout << "Radius: " << m_radius << std::endl;
 }
 
 Point Sphere::getCenter() { return m_center; }

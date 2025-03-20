@@ -1,5 +1,4 @@
 #include "../header/world.h"
-#include "../header/constants.h"
 #include <algorithm>
 #include <iostream>
 
@@ -85,6 +84,7 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
         // Loop through all the objects in the AABB
         for (size_t i = 0; i < treeNode->getObjectList().size(); i++) {
             Intersection* intersection = treeNode->getObjectList()[i]->getObject()->intersect(ray);
+
             if (intersection != nullptr) {
                 if (closestIntersection == nullptr) {
                     // If an intersection hasn't been found yet
@@ -379,16 +379,23 @@ void World::buildKDTree()
 
         std::cout << "Number of objects in scene: " << m_objectList.size() << std::endl;
         std::cout << "Size of KD Tree: " << sceneKDTree->getSize() << std::endl;
+        // sceneKDTree->printTree();
     }
     m_sceneKDTree = sceneKDTree;
 }
 
-KdTreeNode* World::getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives)
+KdTreeNode* World::getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives, int recursiveLevel)
 {
     AxisAlignedBoundingBox* aabb = voxel->getAxisAlignedBoundingBox();
 
     // termination
-    if (TERMINATE_WITH_VOLUME) {
+    if (TERMINATE_WITH_LEVELS) {
+        if (recursiveLevel == 0) {
+            voxel->setObjectList(primitives);
+            voxel->setIsLeaf(true);
+            return voxel;
+        }
+    } else if (TERMINATE_WITH_VOLUME) {
         if (aabb->getVolume() < VOXEL_TERMINAL_VOLUME) {
             voxel->setObjectList(primitives);
             voxel->setIsLeaf(true);
@@ -451,7 +458,7 @@ KdTreeNode* World::getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox
     } else {
         front->setSplitDistance((frontAABB->getZMin() + frontAABB->getZMax()) / 2.0f);
     }
-    front = getNode(front, frontPrimitives);
+    front = getNode(front, frontPrimitives, recursiveLevel - 1);
 
     KdTreeNode* back = new KdTreeNode();
     back->setDimSplit(nextDim);
@@ -463,7 +470,7 @@ KdTreeNode* World::getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox
     } else {
         back->setSplitDistance((backAABB->getZMin() + backAABB->getZMax()) / 2.0f);
     }
-    back = getNode(back, backPrimitives);
+    back = getNode(back, backPrimitives, recursiveLevel - 1);
 
     voxel->setFrontNode(front);
     voxel->setBackNode(back);

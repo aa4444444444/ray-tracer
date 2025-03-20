@@ -39,6 +39,24 @@ void addBunny(World* world)
     world->addPlyModel(p);
 }
 
+void addMahoraga(World* world)
+{
+    // Loading in PLY files
+    happly::PLYData plyIn("plys/mahoraga/mahoraga.ply");
+
+    // Get data from the object
+    std::vector<float> vertexX = plyIn.getElement("vertex").getProperty<float>("x");
+    std::vector<float> vertexY = plyIn.getElement("vertex").getProperty<float>("y");
+    std::vector<float> vertexZ = plyIn.getElement("vertex").getProperty<float>("z");
+
+    std::vector<std::vector<int>> indices = plyIn.getElement("face").getListProperty<int>("vertex_index");
+
+    PlyModel* p
+        = new PlyModel(vertexX, vertexY, vertexZ, indices, Color(1.0f, 1.0f, 1.0f), 0.1f, Eigen::Vector3d(0, -3.0f, 0));
+
+    world->addPlyModel(p);
+}
+
 void addBallScene(World* world)
 {
     // Illumination Models
@@ -99,7 +117,8 @@ int main(int argc, char* argv[])
     World* world = new World();
 
     // addBallScene(world);
-    addBunny(world);
+    // addBunny(world);
+    addMahoraga(world);
 
     // Create light source here!!!
     // Light sources get destroyed by the world

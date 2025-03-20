@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include "color.h"
+#include "constants.h"
 #include "kd_tree_node.h"
 #include "light_source.h"
 #include "object.h"
@@ -39,7 +40,8 @@ public:
     void transformAllObjects(Eigen::Matrix4d transMat);
     void transformLightSources(Eigen::Matrix4d transMat);
     void buildKDTree();
-    KdTreeNode* getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives);
+    KdTreeNode* getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives,
+        int recursiveLevel = KD_MAX_RECURSION_LEVEL);
 
 private:
     std::vector<PlyModel*> m_plyModels;
