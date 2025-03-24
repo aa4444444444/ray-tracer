@@ -1,6 +1,7 @@
 #include "../header/axis_aligned_bounding_box.h"
 #include "../header/intersection.h"
 #include "../header/object.h"
+#include <iostream>
 
 AxisAlignedBoundingBox::AxisAlignedBoundingBox()
 {
@@ -172,4 +173,48 @@ void AxisAlignedBoundingBox::printAABB()
 {
     std::cout << "AABB: X(" << m_xMin << ", " << m_xMax << "), Y(" << m_yMin << ", " << m_yMax << "), Z(" << m_zMin
               << ", " << m_zMax << ")" << std::endl;
+}
+
+float AxisAlignedBoundingBox::getSurfaceArea()
+{
+    float width = m_xMax - m_xMin;
+    float height = m_yMax - m_yMin;
+    float depth = m_zMax - m_zMin;
+    return 2.0f * (width * height + height * depth + depth * width);
+}
+
+float AxisAlignedBoundingBox::getMinInDirection(int direction)
+{
+    // x = 0, y = 1, z = 2
+    if (direction == 0) {
+        return m_xMin;
+    } else if (direction == 1) {
+        return m_yMin;
+    } else {
+        return m_zMin;
+    }
+}
+
+float AxisAlignedBoundingBox::getMaxInDirection(int direction)
+{
+    // x = 0, y = 1, z = 2
+    if (direction == 0) {
+        return m_xMax;
+    } else if (direction == 1) {
+        return m_yMax;
+    } else {
+        return m_zMax;
+    }
+}
+
+float AxisAlignedBoundingBox::getMidPoint(int direction)
+{
+    // x = 0, y = 1, z = 2
+    if (direction == 0) {
+        return (m_xMax + m_xMin) / 2.0f;
+    } else if (direction == 1) {
+        return (m_yMax + m_yMin) / 2.0f;
+    } else {
+        return (m_zMax + m_zMin) / 2.0f;
+    }
 }

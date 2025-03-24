@@ -76,8 +76,6 @@ void Sphere::transform(const Eigen::Matrix4d& transMat)
     Eigen::Vector3d newCenter(
         transformed(0) / transformed(3), transformed(1) / transformed(3), transformed(2) / transformed(3));
     m_center.setPoint(newCenter);
-    std::cout << "Transformed center: " << newCenter(0) << ", " << newCenter(1) << ", " << newCenter(2) << std::endl;
-    std::cout << "Radius: " << m_radius << std::endl;
 }
 
 Point Sphere::getCenter() { return m_center; }

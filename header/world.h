@@ -40,7 +40,11 @@ public:
     void transformAllObjects(Eigen::Matrix4d transMat);
     void transformLightSources(Eigen::Matrix4d transMat);
     void buildKDTree();
+    // Using spatial median along partitioning axis
     KdTreeNode* getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*> primitives,
+        int recursiveLevel = KD_MAX_RECURSION_LEVEL);
+    // Using Surface Area Heuristic
+    KdTreeNode* getNodeSAH(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*>& primitives,
         int recursiveLevel = KD_MAX_RECURSION_LEVEL);
 
 private:
@@ -50,6 +54,13 @@ private:
     std::vector<LightSource*> m_lightSourceList;
     std::vector<AxisAlignedBoundingBox*> m_aabbList;
     KdTreeNode* m_sceneKDTree;
+
+    void findOptimalSplit(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, float& currentSplitDistance,
+        KdTreeNode::DimSplit& currentDimension, float& currentCost, KdTreeNode::DimSplit splitDimension,
+        AxisAlignedBoundingBox* currentVoxel);
+    float computeCost(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, int direction, float splitDistance,
+        float parentSurfaceArea, AxisAlignedBoundingBox* currentVoxel);
+    float getSurfaceArea(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
 };
 
 #endif

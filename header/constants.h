@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Basic Ray Tracing Constants
 const int IMAGE_WIDTH = 512;
 const int IMAGE_HEIGHT = 368;
 const float FOCAL_LENGTH = 0.5;
@@ -19,6 +20,8 @@ const float MAXIMUM_IRRADIANCE = 100.0;
 const float BACKGROUND_RADIANCE_RED = 25.49;
 const float BACKGROUND_RADIANCE_GREEN = 60.39;
 const float BACKGROUND_RADIANCE_BLUE = 95.29;
+
+// Math Constants
 const float PI = 3.14159265358979323846;
 
 // Supersampling toggle
@@ -26,10 +29,13 @@ const bool SUPERSAMPLING = false;
 
 // KD-Tree Stuff
 const bool USE_KD_TREES = true;
+const bool USE_SURFACE_AREA_HEURISTIC = true;
+const float COST_OF_TRAVERSAL = 1.0f;
+const bool USE_BINNING = true;
 const bool TERMINATE_WITH_LEVELS = true;
 const bool TERMINATE_WITH_VOLUME = true;
-const bool TERMINATE_WITH_PRIMITIVES = true;
-const float VOXEL_TERMINAL_VOLUME = 0.1f;
+const bool TERMINATE_WITH_PRIMITIVES = false;
+const float VOXEL_TERMINAL_VOLUME = 0.3f;
 const int MAX_PRIMITIVES_PER_VOXEL = 5;
 const int KD_MAX_RECURSION_LEVEL = 10;
 

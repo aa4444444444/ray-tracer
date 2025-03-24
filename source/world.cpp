@@ -1,6 +1,7 @@
 #include "../header/world.h"
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 World::World() { m_sceneKDTree = nullptr; }
 
@@ -129,8 +130,6 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
                 // If the object isn't in the model
 
                 if (closestObject->getModelAddress() != m_modelList[i]) {
-                    // std::cout << "Object model address: " << closestObject->getModelAddress() << std::endl;
-                    // std::cout << "Model address: " << m_modelList[i] << std::endl;
 
                     // As of right now, only checks the first light source
                     LightSource* light = m_lightSourceList[0];
@@ -375,7 +374,11 @@ void World::buildKDTree()
         sceneKDTree->setDimSplit(KdTreeNode::DimSplit::X);
         sceneKDTree->setSplitDistance((xMin + xMax) / 2.0f);
 
-        sceneKDTree = getNode(sceneKDTree, m_aabbList);
+        if (USE_SURFACE_AREA_HEURISTIC) {
+            sceneKDTree = getNodeSAH(sceneKDTree, m_aabbList);
+        } else {
+            sceneKDTree = getNode(sceneKDTree, m_aabbList);
+        }
 
         std::cout << "Number of objects in scene: " << m_objectList.size() << std::endl;
         std::cout << "Size of KD Tree: " << sceneKDTree->getSize() << std::endl;
@@ -476,4 +479,190 @@ KdTreeNode* World::getNode(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox
     voxel->setBackNode(back);
 
     return voxel;
+}
+
+KdTreeNode* World::getNodeSAH(KdTreeNode* voxel, std::vector<AxisAlignedBoundingBox*>& primitives, int recursiveLevel)
+{
+
+    AxisAlignedBoundingBox* aabb = voxel->getAxisAlignedBoundingBox();
+
+    // termination
+    if (TERMINATE_WITH_LEVELS) {
+        if (recursiveLevel == 0) {
+            voxel->setObjectList(primitives);
+            voxel->setIsLeaf(true);
+            return voxel;
+        }
+    } else if (TERMINATE_WITH_VOLUME) {
+        if (aabb->getVolume() < VOXEL_TERMINAL_VOLUME) {
+            voxel->setObjectList(primitives);
+            voxel->setIsLeaf(true);
+            return voxel;
+        }
+    } else if (TERMINATE_WITH_PRIMITIVES) {
+        if (primitives.size() <= MAX_PRIMITIVES_PER_VOXEL) {
+            voxel->setObjectList(primitives);
+            voxel->setIsLeaf(true);
+            return voxel;
+        }
+    }
+
+    // Initialize the split distance to 0 in the X-Direction
+    float splitDistance = 0;
+    KdTreeNode::DimSplit splitDimension = KdTreeNode::DimSplit::X;
+
+    float minimumCost = std::numeric_limits<float>::max();
+
+    // Sorting based on midpoint of AABB along certain axis
+
+    // Sort by X
+    std::stable_sort(primitives.begin(), primitives.end(),
+        [](const auto& aabb1, const auto& aabb2) { return aabb1->getMidPoint(0) < aabb2->getMidPoint(0); });
+    findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::X, aabb);
+
+    // Sort by Y
+    std::stable_sort(primitives.begin(), primitives.end(),
+        [](const auto& aabb1, const auto& aabb2) { return aabb1->getMidPoint(1) < aabb2->getMidPoint(1); });
+    findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Y, aabb);
+
+    // Sort by Z
+    std::stable_sort(primitives.begin(), primitives.end(),
+        [](const auto& aabb1, const auto& aabb2) { return aabb1->getMidPoint(2) < aabb2->getMidPoint(2); });
+    findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Z, aabb);
+
+    // Assign values to current voxel
+    voxel->setDimSplit(splitDimension);
+    voxel->setSplitDistance(splitDistance);
+
+    // Set up front and back AABB
+    AxisAlignedBoundingBox* frontAABB = nullptr;
+    AxisAlignedBoundingBox* backAABB = nullptr;
+
+    std::vector<AxisAlignedBoundingBox*> frontPrimitives;
+    std::vector<AxisAlignedBoundingBox*> backPrimitives;
+
+    // Get front and back voxel
+    if (splitDimension == KdTreeNode::DimSplit::X) {
+        frontAABB = new AxisAlignedBoundingBox(
+            aabb->getXMin(), splitDistance, aabb->getYMin(), aabb->getYMax(), aabb->getZMin(), aabb->getZMax());
+        backAABB = new AxisAlignedBoundingBox(
+            splitDistance, aabb->getXMax(), aabb->getYMin(), aabb->getYMax(), aabb->getZMin(), aabb->getZMax());
+    } else if (splitDimension == KdTreeNode::DimSplit::Y) {
+        frontAABB = new AxisAlignedBoundingBox(
+            aabb->getXMin(), aabb->getXMax(), aabb->getYMin(), splitDistance, aabb->getZMin(), aabb->getZMax());
+        backAABB = new AxisAlignedBoundingBox(
+            aabb->getXMin(), aabb->getXMax(), splitDistance, aabb->getYMax(), aabb->getZMin(), aabb->getZMax());
+    } else {
+        frontAABB = new AxisAlignedBoundingBox(
+            aabb->getXMin(), aabb->getXMax(), aabb->getYMin(), aabb->getYMax(), aabb->getZMin(), splitDistance);
+        backAABB = new AxisAlignedBoundingBox(
+            aabb->getXMin(), aabb->getXMax(), aabb->getYMin(), aabb->getYMax(), splitDistance, aabb->getZMax());
+    }
+
+    // Partition primitives
+    for (size_t i = 0; i < primitives.size(); i++) {
+        if (primitives[i]->intersect(frontAABB)) {
+            frontPrimitives.push_back(primitives[i]);
+        }
+
+        if (primitives[i]->intersect(backAABB)) {
+            backPrimitives.push_back(primitives[i]);
+        }
+    }
+
+    KdTreeNode* front = new KdTreeNode();
+    front->setAxisAlignedBoundingBox(frontAABB);
+    front = getNodeSAH(front, frontPrimitives, recursiveLevel - 1);
+
+    KdTreeNode* back = new KdTreeNode();
+    back->setAxisAlignedBoundingBox(backAABB);
+    back = getNodeSAH(back, backPrimitives, recursiveLevel - 1);
+
+    voxel->setFrontNode(front);
+    voxel->setBackNode(back);
+
+    return voxel;
+}
+
+void World::findOptimalSplit(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, float& currentSplitDistance,
+    KdTreeNode::DimSplit& currentDimension, float& currentCost, KdTreeNode::DimSplit splitDimension,
+    AxisAlignedBoundingBox* currentVoxel)
+{
+    int direction
+        = (splitDimension == KdTreeNode::DimSplit::X ? 0 : (splitDimension == KdTreeNode::DimSplit::Y ? 1 : 2));
+    for (size_t i = 0; i < sortedPrimitives.size(); i++) {
+        // We choose upper/lower bounds of each object's AABB as the possible valid split planes
+        float minBound = sortedPrimitives[i]->getMinInDirection(direction);
+        float maxBound = sortedPrimitives[i]->getMaxInDirection(direction);
+
+        // float costMinBound
+        //     = computeCost(sortedPrimitives, direction, minBound, currentVoxel->getSurfaceArea(), currentVoxel);
+
+        // if (costMinBound < currentCost) {
+        //     currentCost = costMinBound;
+        //     currentDimension = splitDimension;
+        //     currentSplitDistance = minBound;
+        // }
+
+        float costMaxBound
+            = computeCost(sortedPrimitives, direction, maxBound, currentVoxel->getSurfaceArea(), currentVoxel);
+
+        if (costMaxBound < currentCost) {
+            currentCost = costMaxBound;
+            currentDimension = splitDimension;
+            currentSplitDistance = maxBound;
+        }
+    }
+}
+
+float World::computeCost(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, int direction, float splitDistance,
+    float parentSurfaceArea, AxisAlignedBoundingBox* currentVoxel)
+{
+    int numInLeftNode = 0;
+    size_t iterator = 0;
+    bool leftNodeDone = false;
+
+    while (!leftNodeDone && iterator < sortedPrimitives.size()) {
+        float midPoint = sortedPrimitives[iterator]->getMidPoint(direction);
+        if (midPoint <= splitDistance) {
+            numInLeftNode++;
+        } else {
+            leftNodeDone = true;
+        }
+        iterator++;
+    }
+
+    int numInRightNode = sortedPrimitives.size() - numInLeftNode;
+
+    float leftNodeSurfaceArea = 0.0f;
+    float rightNodeSurfaceArea = 0.0f;
+
+    // Get front and back voxel
+    if (direction == 0) {
+        leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), splitDistance, currentVoxel->getYMin(),
+            currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());
+        rightNodeSurfaceArea = getSurfaceArea(splitDistance, currentVoxel->getXMax(), currentVoxel->getYMin(),
+            currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());
+    } else if (direction == 1) {
+        leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(), currentVoxel->getYMin(),
+            splitDistance, currentVoxel->getZMin(), currentVoxel->getZMax());
+        rightNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(), splitDistance,
+            currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());
+    } else {
+        leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(), currentVoxel->getYMin(),
+            currentVoxel->getYMax(), currentVoxel->getZMin(), splitDistance);
+        rightNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(), currentVoxel->getYMin(),
+            currentVoxel->getYMax(), splitDistance, currentVoxel->getZMax());
+    }
+
+    return COST_OF_TRAVERSAL + numInLeftNode * leftNodeSurfaceArea / parentSurfaceArea
+        + numInRightNode * rightNodeSurfaceArea / parentSurfaceArea;
+}
+
+float World::getSurfaceArea(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax)
+{
+    float width = xMax - xMin;
+    float height = yMax - yMin;
+    float depth = zMax - zMin;
+    return 2.0f * (width * height + height * depth + depth * width);
 }

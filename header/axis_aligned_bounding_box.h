@@ -39,6 +39,10 @@ public:
     void setZMax(float zMax);
     void setObject(Object* object);
     float getVolume();
+    float getSurfaceArea();
+    float getMinInDirection(int direction);
+    float getMaxInDirection(int direction);
+    float getMidPoint(int direction);
     bool intersectionInsideBox(Intersection* intersection);
     AABBIntersection intersectRay(Ray* ray, float splitDistance, int splitPlane);
     bool intersect(AxisAlignedBoundingBox* aabb);

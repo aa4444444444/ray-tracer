@@ -6,6 +6,7 @@
 
 # Don't need vscode stuff
 .vscode/*
+.vs/*
 
 # Don't need output
 output/*

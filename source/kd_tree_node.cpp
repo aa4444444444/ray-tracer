@@ -1,4 +1,5 @@
 #include "../header/kd_tree_node.h"
+#include <iostream>
 
 KdTreeNode::KdTreeNode()
 {
