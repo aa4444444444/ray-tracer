@@ -43,6 +43,7 @@ public:
     float getMinInDirection(int direction);
     float getMaxInDirection(int direction);
     float getMidPoint(int direction);
+    float getWidth(int direction);
     bool intersectionInsideBox(Intersection* intersection);
     AABBIntersection intersectRay(Ray* ray, float splitDistance, int splitPlane);
     bool intersect(AxisAlignedBoundingBox* aabb);

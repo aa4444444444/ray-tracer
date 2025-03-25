@@ -58,6 +58,9 @@ private:
     void findOptimalSplit(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, float& currentSplitDistance,
         KdTreeNode::DimSplit& currentDimension, float& currentCost, KdTreeNode::DimSplit splitDimension,
         AxisAlignedBoundingBox* currentVoxel);
+    void findOptimalSplitWithBinning(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives,
+        float& currentSplitDistance, KdTreeNode::DimSplit& currentDimension, float& currentCost,
+        KdTreeNode::DimSplit splitDimension, AxisAlignedBoundingBox* currentVoxel);
     float computeCost(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, int direction, float splitDistance,
         float parentSurfaceArea, AxisAlignedBoundingBox* currentVoxel);
     float getSurfaceArea(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);

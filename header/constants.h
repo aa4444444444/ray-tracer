@@ -30,8 +30,10 @@ const bool SUPERSAMPLING = false;
 // KD-Tree Stuff
 const bool USE_KD_TREES = true;
 const bool USE_SURFACE_AREA_HEURISTIC = true;
+const bool IGNORE_MIN_SPLIT_PLANE = true;
 const float COST_OF_TRAVERSAL = 1.0f;
 const bool USE_BINNING = true;
+const int NUMBER_OF_BINS = 128;
 const bool TERMINATE_WITH_LEVELS = true;
 const bool TERMINATE_WITH_VOLUME = true;
 const bool TERMINATE_WITH_PRIMITIVES = false;

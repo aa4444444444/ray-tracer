@@ -21,7 +21,8 @@
 
 using namespace std;
 
-void addBunny(World* world)
+void addBunny(World* world, Color& color, float& scaleAmount, const Eigen::Vector3d& rotateVec,
+    const Eigen::Vector3d& translateVec)
 {
     // Loading in PLY files
     happly::PLYData plyIn("plys/bunny/reconstruction/bun_zipper.ply");
@@ -33,8 +34,7 @@ void addBunny(World* world)
 
     std::vector<std::vector<int>> indices = plyIn.getElement("face").getListProperty<int>("vertex_indices");
 
-    PlyModel* p = new PlyModel(vertexX, vertexY, vertexZ, indices, Color(1.0f, 0.0f, 0.0f), 40.0f,
-        Eigen::Vector3d(0, 90, 0), Eigen::Vector3d(0, -3.0f, 0));
+    PlyModel* p = new PlyModel(vertexX, vertexY, vertexZ, indices, color, scaleAmount, rotateVec, translateVec);
 
     world->addPlyModel(p);
 }
@@ -135,7 +135,11 @@ int main(int argc, char* argv[])
     World* world = new World();
 
     // addBallScene(world);
-    addBunny(world);
+    Color bunny1Color(1.0f, 0.0f, 0.0f);
+    float bunny1ScaleAmount = 40.0f;
+    Eigen::Vector3d bunny1RotateVec(0, 0, 0);
+    Eigen::Vector3d bunny1TranslateVec(0, -3.0f, 0);
+    addBunny(world, bunny1Color, bunny1ScaleAmount, bunny1RotateVec, bunny1TranslateVec);
     // addArmadillo(world);
     // addMahoraga(world);
 

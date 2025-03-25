@@ -1,5 +1,6 @@
 #include "../header/world.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <limits>
 
@@ -518,17 +519,23 @@ KdTreeNode* World::getNodeSAH(KdTreeNode* voxel, std::vector<AxisAlignedBounding
     // Sort by X
     std::stable_sort(primitives.begin(), primitives.end(),
         [](const auto& aabb1, const auto& aabb2) { return aabb1->getMidPoint(0) < aabb2->getMidPoint(0); });
-    findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::X, aabb);
+    USE_BINNING
+    ? findOptimalSplitWithBinning(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::X, aabb)
+    : findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::X, aabb);
 
     // Sort by Y
     std::stable_sort(primitives.begin(), primitives.end(),
         [](const auto& aabb1, const auto& aabb2) { return aabb1->getMidPoint(1) < aabb2->getMidPoint(1); });
-    findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Y, aabb);
+    USE_BINNING
+    ? findOptimalSplitWithBinning(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Y, aabb)
+    : findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Y, aabb);
 
     // Sort by Z
     std::stable_sort(primitives.begin(), primitives.end(),
         [](const auto& aabb1, const auto& aabb2) { return aabb1->getMidPoint(2) < aabb2->getMidPoint(2); });
-    findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Z, aabb);
+    USE_BINNING
+    ? findOptimalSplitWithBinning(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Z, aabb)
+    : findOptimalSplit(primitives, splitDistance, splitDimension, minimumCost, KdTreeNode::DimSplit::Z, aabb);
 
     // Assign values to current voxel
     voxel->setDimSplit(splitDimension);
@@ -584,6 +591,106 @@ KdTreeNode* World::getNodeSAH(KdTreeNode* voxel, std::vector<AxisAlignedBounding
     return voxel;
 }
 
+void World::findOptimalSplitWithBinning(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives,
+    float& currentSplitDistance, KdTreeNode::DimSplit& currentDimension, float& currentCost,
+    KdTreeNode::DimSplit splitDimension, AxisAlignedBoundingBox* currentVoxel)
+{
+    // Split planes are at AABB_min + i * W for i = 0, 1, ..., NUMBER_OF_BINS
+    // W is the bin width
+    int direction
+        = (splitDimension == KdTreeNode::DimSplit::X ? 0 : (splitDimension == KdTreeNode::DimSplit::Y ? 1 : 2));
+    float width = currentVoxel->getWidth(direction);
+    float aabbMin = currentVoxel->getMinInDirection(direction);
+    float binWidth = width / (NUMBER_OF_BINS * 1.0f);
+
+    // Initialize all counters to 0 and increment if a primitive is in the bin
+    int bins[NUMBER_OF_BINS] = { 0 };
+
+    int leftCount[NUMBER_OF_BINS] = { 0 };
+    int rightCount[NUMBER_OF_BINS] = { 0 };
+
+    // Initialize costs array
+    float costs[NUMBER_OF_BINS] = { 0.0f };
+
+    for (size_t i = 0; i < sortedPrimitives.size(); i++) {
+        float minBound = sortedPrimitives[i]->getMinInDirection(direction);
+        float maxBound = sortedPrimitives[i]->getMaxInDirection(direction);
+        int minIndex = floor((minBound - aabbMin) / binWidth);
+        int maxIndex = floor((maxBound - aabbMin) / binWidth);
+
+        // Clamping just in case
+        if (minIndex < 0) {
+            minIndex = 0;
+        } else if (minIndex > (NUMBER_OF_BINS - 1)) {
+            minIndex = NUMBER_OF_BINS - 1;
+        }
+        if (maxIndex < 0) {
+            maxIndex = 0;
+        } else if (maxIndex > (NUMBER_OF_BINS - 1)) {
+            maxIndex = NUMBER_OF_BINS - 1;
+        }
+
+        for (int j = minIndex; j <= maxIndex; j++) {
+            bins[j] = bins[j] + 1;
+        }
+    }
+
+    // Compute left count from the start
+    leftCount[0] = bins[0];
+    for (int i = 1; i < NUMBER_OF_BINS; i++) {
+        leftCount[i] = leftCount[i - 1] + bins[i];
+    }
+
+    // Compute right count from the end
+    rightCount[NUMBER_OF_BINS - 1] = bins[NUMBER_OF_BINS - 1];
+    for (int i = (NUMBER_OF_BINS - 2); i >= 0; i--) {
+        rightCount[i] = rightCount[i + 1] + bins[i];
+    }
+
+    for (int i = 0; i < (NUMBER_OF_BINS - 1); i++) {
+
+        float splitDistance = aabbMin + i * binWidth;
+        float leftNodeSurfaceArea = 0.0f;
+        float rightNodeSurfaceArea = 0.0f;
+        float parentSurfaceArea = currentVoxel->getSurfaceArea();
+
+        if (direction == 0) {
+            leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), splitDistance, currentVoxel->getYMin(),
+                currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());
+            rightNodeSurfaceArea = getSurfaceArea(splitDistance, currentVoxel->getXMax(), currentVoxel->getYMin(),
+                currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());
+        } else if (direction == 1) {
+            leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(),
+                currentVoxel->getYMin(), splitDistance, currentVoxel->getZMin(), currentVoxel->getZMax());
+            rightNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(), splitDistance,
+                currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());
+        } else {
+            leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(),
+                currentVoxel->getYMin(), currentVoxel->getYMax(), currentVoxel->getZMin(), splitDistance);
+            rightNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), currentVoxel->getXMax(),
+                currentVoxel->getYMin(), currentVoxel->getYMax(), splitDistance, currentVoxel->getZMax());
+        }
+
+        costs[i] = COST_OF_TRAVERSAL + leftCount[i] * leftNodeSurfaceArea / parentSurfaceArea
+            + rightCount[i] * rightNodeSurfaceArea / parentSurfaceArea;
+    }
+
+    // Find index of minimum cost in array
+    int indexMinCost = 0;
+    for (int i = 1; i < (NUMBER_OF_BINS - 1); i++) {
+        if (costs[i] < costs[indexMinCost]) {
+            indexMinCost = i;
+        }
+    }
+
+    // Update min cost if necessary
+    if (costs[indexMinCost] < currentCost) {
+        currentCost = costs[indexMinCost];
+        currentDimension = splitDimension;
+        currentSplitDistance = aabbMin + indexMinCost * binWidth;
+    }
+}
+
 void World::findOptimalSplit(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives, float& currentSplitDistance,
     KdTreeNode::DimSplit& currentDimension, float& currentCost, KdTreeNode::DimSplit splitDimension,
     AxisAlignedBoundingBox* currentVoxel)
@@ -592,17 +699,20 @@ void World::findOptimalSplit(std::vector<AxisAlignedBoundingBox*>& sortedPrimiti
         = (splitDimension == KdTreeNode::DimSplit::X ? 0 : (splitDimension == KdTreeNode::DimSplit::Y ? 1 : 2));
     for (size_t i = 0; i < sortedPrimitives.size(); i++) {
         // We choose upper/lower bounds of each object's AABB as the possible valid split planes
-        float minBound = sortedPrimitives[i]->getMinInDirection(direction);
+        if (!IGNORE_MIN_SPLIT_PLANE) {
+            float minBound = sortedPrimitives[i]->getMinInDirection(direction);
+
+            float costMinBound
+                = computeCost(sortedPrimitives, direction, minBound, currentVoxel->getSurfaceArea(), currentVoxel);
+
+            if (costMinBound < currentCost) {
+                currentCost = costMinBound;
+                currentDimension = splitDimension;
+                currentSplitDistance = minBound;
+            }
+        }
+
         float maxBound = sortedPrimitives[i]->getMaxInDirection(direction);
-
-        // float costMinBound
-        //     = computeCost(sortedPrimitives, direction, minBound, currentVoxel->getSurfaceArea(), currentVoxel);
-
-        // if (costMinBound < currentCost) {
-        //     currentCost = costMinBound;
-        //     currentDimension = splitDimension;
-        //     currentSplitDistance = minBound;
-        // }
 
         float costMaxBound
             = computeCost(sortedPrimitives, direction, maxBound, currentVoxel->getSurfaceArea(), currentVoxel);
@@ -637,7 +747,6 @@ float World::computeCost(std::vector<AxisAlignedBoundingBox*>& sortedPrimitives,
     float leftNodeSurfaceArea = 0.0f;
     float rightNodeSurfaceArea = 0.0f;
 
-    // Get front and back voxel
     if (direction == 0) {
         leftNodeSurfaceArea = getSurfaceArea(currentVoxel->getXMin(), splitDistance, currentVoxel->getYMin(),
             currentVoxel->getYMax(), currentVoxel->getZMin(), currentVoxel->getZMax());

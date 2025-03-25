@@ -218,3 +218,15 @@ float AxisAlignedBoundingBox::getMidPoint(int direction)
         return (m_zMax + m_zMin) / 2.0f;
     }
 }
+
+float AxisAlignedBoundingBox::getWidth(int direction)
+{
+    // x = 0, y = 1, z = 2
+    if (direction == 0) {
+        return m_xMax - m_xMin;
+    } else if (direction == 1) {
+        return m_yMax - m_yMin;
+    } else {
+        return m_zMax - m_zMin;
+    }
+}
