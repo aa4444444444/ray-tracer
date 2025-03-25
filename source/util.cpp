@@ -3,6 +3,7 @@
 // NORMAL SHOULD BE NORMALIZED!!!!!!
 Vector findReflection(Vector vec, Vector normal)
 {
+    normal.normalize();
     Eigen::Vector3d reflection = vec.getVector() - (2 * vec.dot(&normal)) * normal.getVector();
     return Vector(reflection);
 }

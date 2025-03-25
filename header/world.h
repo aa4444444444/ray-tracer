@@ -34,7 +34,7 @@ public:
     void addModelObject(Object* object);
     void addPlyModel(PlyModel* plyModel);
     void addLightSource(LightSource* lightSource);
-    Radiance spawnRay(Ray* ray);
+    Radiance spawnRay(Ray* ray, int depth = 1);
     FinalRadiance traverseKDTree(Ray* ray, KdTreeNode* treeNode);
     void transform(Object* object, Eigen::Matrix4d transMat);
     void transformAllObjects(Eigen::Matrix4d transMat);

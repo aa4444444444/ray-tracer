@@ -8,7 +8,7 @@ const float FOCAL_LENGTH = 0.5;
 const float FILM_PLANE_WIDTH = 1.33;
 const float FILM_PLANE_HEIGHT = 1;
 const float CAMERA_POS_X = 0.0;
-const float CAMERA_POS_Y = 4.0;
+const float CAMERA_POS_Y = 1.0;
 const float CAMERA_POS_Z = 7.0;
 const float CAMERA_UP_X = 0.0;
 const float CAMERA_UP_Y = 1.0;
@@ -25,10 +25,10 @@ const float BACKGROUND_RADIANCE_BLUE = 95.29;
 const float PI = 3.14159265358979323846;
 
 // Supersampling toggle
-const bool SUPERSAMPLING = false;
+const bool SUPERSAMPLING = true;
 
 // KD-Tree Stuff
-const bool USE_KD_TREES = true;
+const bool USE_KD_TREES = false;
 const bool USE_SURFACE_AREA_HEURISTIC = true;
 const bool IGNORE_MIN_SPLIT_PLANE = true;
 const float COST_OF_TRAVERSAL = 1.0f;
@@ -39,6 +39,6 @@ const bool TERMINATE_WITH_VOLUME = true;
 const bool TERMINATE_WITH_PRIMITIVES = false;
 const float VOXEL_TERMINAL_VOLUME = 0.3f;
 const int MAX_PRIMITIVES_PER_VOXEL = 5;
-const int KD_MAX_RECURSION_LEVEL = 10;
+const int KD_MAX_RECURSION_LEVEL = 3;
 
 #endif

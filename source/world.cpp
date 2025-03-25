@@ -1,4 +1,5 @@
 #include "../header/world.h"
+#include "../header/util.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -215,7 +216,7 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode)
     }
 }
 
-Radiance World::spawnRay(Ray* ray)
+Radiance World::spawnRay(Ray* ray, int depth)
 {
     if (USE_KD_TREES) {
         return traverseKDTree(ray, m_sceneKDTree).m_radiance;
@@ -230,7 +231,7 @@ Radiance World::spawnRay(Ray* ray)
         Radiance closestObjectRadiance(BACKGROUND_RADIANCE_RED, BACKGROUND_RADIANCE_GREEN, BACKGROUND_RADIANCE_BLUE);
 
         // Origin
-        Point coordOrigin(0, 0, 0);
+        Point coordOrigin = ray->getOrigin();
 
         // Loop through all the objects in the scene
         for (size_t i = 0; i < m_objectList.size(); i++) {
@@ -302,6 +303,34 @@ Radiance World::spawnRay(Ray* ray)
             }
 
             closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
+
+            // Reflection and Transmission
+            if (depth < closestObject->getMaxDepth()) {
+                // Reflection
+                if (closestObject->getKReflection() > 0.0f) {
+                    Vector reflection = findReflection(ray->getDirection(), closestIntersection->getNormal());
+                    Point reflectionPoint = closestIntersection->getIntersectionPoint();
+                    reflectionPoint.translate(closestIntersection->getNormal().getVector() * 0.01f);
+                    Ray* reflectionRay = new Ray(reflectionPoint, reflection);
+
+                    Intersection* wtf = closestObject->intersect(reflectionRay);
+
+                    if (wtf != nullptr) {
+                        std::cout << "SELF INTERSECTION DETECTED WHILE REFLECTING" << std::endl;
+                        delete wtf;
+                    }
+
+                    Radiance reflectionContribution = spawnRay(reflectionRay, depth + 1);
+                    reflectionContribution.scaleRadiance(closestObject->getKReflection());
+                    closestObjectRadiance.scaleRadiance(1.0f - closestObject->getKReflection());
+                    closestObjectRadiance.addRadiance(reflectionContribution);
+                    delete reflectionRay;
+                }
+                // Transmission
+                if (closestObject->getKTransmission() > 0.0f) {
+                    // WIP
+                }
+            }
 
             delete closestIntersection;
         }

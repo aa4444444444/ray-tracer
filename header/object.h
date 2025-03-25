@@ -75,7 +75,7 @@ protected:
     // Reflection and Transmission constants
     float m_kReflection = 0.0f;
     float m_kTransmission = 0.0f;
-    int m_maxDepth = 5;
+    int m_maxDepth = 0;
 
 private:
     std::string material;
