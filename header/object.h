@@ -39,6 +39,12 @@ public:
     void setTexture(Texture* texture) { m_texture = texture; }
     void* getModelAddress() { return m_modelAddress; }
     void setModelAddress(void* modelAddress) { m_modelAddress = modelAddress; }
+    float getKReflection() { return m_kReflection; }
+    void setKReflection(float kReflection) { m_kReflection = kReflection; }
+    float getKTransmission() { return m_kTransmission; }
+    void setKTransmission(float kTransmission) { m_kTransmission = kTransmission; }
+    int getMaxDepth() { return m_maxDepth; }
+    void setMaxDepth(int maxDepth) { m_maxDepth = maxDepth; }
     virtual ~Object()
     {
         if (m_illuminationModel != nullptr) {
@@ -63,7 +69,13 @@ protected:
     // Texture
     Texture* m_texture = nullptr;
 
+    // If object belongs to a bigger model, this points to it
     void* m_modelAddress = nullptr;
+
+    // Reflection and Transmission constants
+    float m_kReflection = 0.0f;
+    float m_kTransmission = 0.0f;
+    int m_maxDepth = 5;
 
 private:
     std::string material;
