@@ -1,5 +1,4 @@
 #include "../header/sphere.h"
-#include <iostream>
 
 Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
     : Object()
@@ -14,7 +13,7 @@ Sphere::Sphere(float centerX, float centerY, float centerZ, float radius)
 // DOESN'T DO THE RIGHT THING AS OF RIGHT NOW
 Eigen::Vector2d Sphere::getTextureUV(Point intersectionPoint) { return Eigen::Vector2d(1.0f, 1.0f); }
 
-float getDiscriminant(float b, float c) { return b * b - 4 * c; }
+float getDiscriminant(float b, float c) { return b * b - 4.0f * c; }
 
 Intersection* Sphere::intersect(Ray* ray)
 {
@@ -46,8 +45,8 @@ Intersection* Sphere::intersect(Ray* ray)
     } else if (discriminant == 0) {
         omega = -1 * b / 2.0;
     } else {
-        float root_1 = (-1 * b + discriminant) / 2.0;
-        float root_2 = (-1 * b - discriminant) / 2.0;
+        float root_1 = (-1 * b + sqrt(discriminant)) / 2.0;
+        float root_2 = (-1 * b - sqrt(discriminant)) / 2.0;
         if (root_1 < 0) {
             omega = root_2;
         } else if (root_2 < 0) {
@@ -69,15 +68,23 @@ Intersection* Sphere::intersect(Ray* ray)
     return intersection;
 }
 
-void Sphere::transform(Eigen::Matrix4d transMat)
+void Sphere::transform(const Eigen::Matrix4d& transMat)
 {
 
     Eigen::Vector4d augmented(m_center.getPoint()(0), m_center.getPoint()(1), m_center.getPoint()(2), 1);
     Eigen::Vector4d transformed = transMat * augmented;
-    Eigen::Vector3d newCenter(transformed(0), transformed(1), transformed(2));
+    Eigen::Vector3d newCenter(
+        transformed(0) / transformed(3), transformed(1) / transformed(3), transformed(2) / transformed(3));
     m_center.setPoint(newCenter);
 }
 
 Point Sphere::getCenter() { return m_center; }
 float Sphere::getRadius() { return m_radius; }
 void Sphere::setRadius(float r) { m_radius = r; }
+
+AxisAlignedBoundingBox* Sphere::getAxisAlignedBoundingBox()
+{
+    return new AxisAlignedBoundingBox(m_center.getPoint()(0) - m_radius, m_center.getPoint()(0) + m_radius,
+        m_center.getPoint()(1) - m_radius, m_center.getPoint()(1) + m_radius, m_center.getPoint()(2) - m_radius,
+        m_center.getPoint()(2) + m_radius, this);
+}

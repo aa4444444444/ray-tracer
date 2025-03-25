@@ -7,6 +7,7 @@ Checkerboard::Checkerboard(Color color1, Color color2, float width, float height
 {
     m_color1 = color1;
     m_color2 = color2;
+    m_usePerlinNoise = false;
     m_checksize = checksize;
     m_noiseScale = noiseScale;
     m_width = width;

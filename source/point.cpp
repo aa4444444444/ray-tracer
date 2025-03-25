@@ -22,6 +22,10 @@ void Point::transform(const Eigen::Matrix4d& transMat)
     m_point(2) = result(2) / result(3);
 }
 
+void Point::scale(float scaleAmount) { m_point = m_point * scaleAmount; }
+
+void Point::translate(const Eigen::Vector3d& translate) { m_point = m_point + translate; }
+
 float Point::distance(Point* p)
 {
     return sqrt((m_point(0) - p->getPoint()(0)) * (m_point(0) - p->getPoint()(0))

@@ -1,4 +1,5 @@
 #include "../header/triangle.h"
+#include "../header/constants.h"
 
 Triangle::Triangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
 {
@@ -84,7 +85,44 @@ Intersection* Triangle::intersect(Ray* ray)
     }
 }
 
-void Triangle::transform(Eigen::Matrix4d transMat)
+void Triangle::scale(float scaleAmount)
+{
+    m_point0.scale(scaleAmount);
+    m_point1.scale(scaleAmount);
+    m_point2.scale(scaleAmount);
+
+    m_e1 = Vector(m_point1.getPoint() - m_point0.getPoint());
+    m_e2 = Vector(m_point2.getPoint() - m_point0.getPoint());
+}
+
+void Triangle::translate(const Eigen::Vector3d& translate)
+{
+    m_point0.translate(translate);
+    m_point1.translate(translate);
+    m_point2.translate(translate);
+}
+
+void Triangle::rotate(const Eigen::Vector3d& rotate)
+{
+    Eigen::Matrix4d rotateX;
+    Eigen::Matrix4d rotateY;
+    Eigen::Matrix4d rotateZ;
+
+    rotateX << 1, 0, 0, 0, 0, cos(rotate(0) * M_PI / 180.0f), -1.0f * sin(rotate(0) * M_PI / 180.0f), 0, 0,
+        sin(rotate(0) * M_PI / 180.0f), cos(rotate(0) * M_PI / 180.0f), 0, 0, 0, 0, 1;
+
+    rotateY << cos(rotate(1) * M_PI / 180.0f), 0, sin(rotate(1) * M_PI / 180.0f), 0, 0, 1, 0, 0,
+        -1.0f * sin(rotate(1) * M_PI / 180.0f), 0, cos(rotate(1) * M_PI / 180.0f), 0, 0, 0, 0, 1;
+
+    rotateZ << cos(rotate(2) * M_PI / 180.0f), -1.0f * sin(rotate(2) * M_PI / 180.0f), 0, 0,
+        sin(rotate(2) * M_PI / 180.0f), cos(rotate(2) * M_PI / 180.0f), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+
+    transform(rotateX);
+    transform(rotateY);
+    transform(rotateZ);
+}
+
+void Triangle::transform(const Eigen::Matrix4d& transMat)
 {
     Eigen::Vector4d augmentedPoint0(m_point0.getPoint()(0), m_point0.getPoint()(1), m_point0.getPoint()(2), 1);
     Eigen::Vector4d transformedPoint0 = transMat * augmentedPoint0;
@@ -106,4 +144,16 @@ void Triangle::transform(Eigen::Matrix4d transMat)
 
     Eigen::Vector3d newe2 = m_point2.getPoint() - m_point0.getPoint();
     m_e2.setVector(newe2);
+}
+
+AxisAlignedBoundingBox* Triangle::getAxisAlignedBoundingBox()
+{
+    float xMin = std::min(std::min(m_point0.getPoint()(0), m_point1.getPoint()(0)), m_point2.getPoint()(0));
+    float xMax = std::max(std::max(m_point0.getPoint()(0), m_point1.getPoint()(0)), m_point2.getPoint()(0));
+    float yMin = std::min(std::min(m_point0.getPoint()(1), m_point1.getPoint()(1)), m_point2.getPoint()(1));
+    float yMax = std::max(std::max(m_point0.getPoint()(1), m_point1.getPoint()(1)), m_point2.getPoint()(1));
+    float zMin = std::min(std::min(m_point0.getPoint()(2), m_point1.getPoint()(2)), m_point2.getPoint()(2));
+    float zMax = std::max(std::max(m_point0.getPoint()(2), m_point1.getPoint()(2)), m_point2.getPoint()(2));
+
+    return new AxisAlignedBoundingBox(xMin, xMax, yMin, yMax, zMin, zMax, this);
 }

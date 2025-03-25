@@ -14,8 +14,10 @@ public:
     Point(float x, float y, float z);
     Point(Point* point);
     Eigen::Vector3d getPoint();
+    void translate(const Eigen::Vector3d& translate);
     void setPoint(const Eigen::Vector3d&);
     void transform(const Eigen::Matrix4d& transMat);
+    void scale(float scaleAmount);
     float distance(Point* p);
 
 private:

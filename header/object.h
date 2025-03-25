@@ -1,6 +1,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include "axis_aligned_bounding_box.h"
 #include "color.h"
 #include "illumination_model.h"
 #include "intersection.h"
@@ -14,8 +15,9 @@
 class Object {
 public:
     virtual Intersection* intersect(Ray* ray) = 0;
-    virtual void transform(Eigen::Matrix4d transMat) = 0;
+    virtual void transform(const Eigen::Matrix4d& transMat) = 0;
     virtual Eigen::Vector2d getTextureUV(Point intersectionPoint) = 0;
+    virtual AxisAlignedBoundingBox* getAxisAlignedBoundingBox() = 0;
 
     Color getColor() { return m_color; }
     void setColor(Color c)
@@ -35,6 +37,8 @@ public:
     void setIlluminationModel(IlluminationModel* illuminationModel) { m_illuminationModel = illuminationModel; }
     Texture* getTexture() { return m_texture; }
     void setTexture(Texture* texture) { m_texture = texture; }
+    void* getModelAddress() { return m_modelAddress; }
+    void setModelAddress(void* modelAddress) { m_modelAddress = modelAddress; }
     virtual ~Object()
     {
         if (m_illuminationModel != nullptr) {
@@ -54,10 +58,12 @@ protected:
     Color m_specColor;
 
     // BRDF
-    IlluminationModel* m_illuminationModel;
+    IlluminationModel* m_illuminationModel = nullptr;
 
     // Texture
-    Texture* m_texture;
+    Texture* m_texture = nullptr;
+
+    void* m_modelAddress = nullptr;
 
 private:
     std::string material;

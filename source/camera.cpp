@@ -1,6 +1,7 @@
 #include "../header/camera.h"
 #include "../header/constants.h"
 #include "../header/util.h"
+#include <chrono>
 #include <fstream>
 #include <iostream>
 
@@ -44,6 +45,14 @@ void Camera::render(World* world)
         world->transformAllObjects(viewTransform);
         world->transformLightSources(viewTransform);
 
+        if (USE_KD_TREES) {
+            auto start = std::chrono::steady_clock::now();
+            world->buildKDTree();
+            auto finish = std::chrono::steady_clock::now();
+            double elapsed_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(finish - start).count();
+            std::cout << "Building tree took: " << elapsed_seconds << " seconds." << std::endl;
+        }
+
         // world location of top-left pixel of film plane is (-w/2, h/2, f)
         // where w = width of film plane, h = height of film plane, f = focal length
         // to shoot a ray through the center of this pixel, we shift right and down
@@ -55,9 +64,11 @@ void Camera::render(World* world)
         Eigen::Vector3d topLeftRay(
             -1 * FILM_PLANE_WIDTH / 2.0 + pixelWidth / 2.0, FILM_PLANE_HEIGHT / 2.0 - pixelHeight / 2.0, -FOCAL_LENGTH);
 
+        auto start = std::chrono::steady_clock::now();
         // Loop through the film plane
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
+
                 // Supersampling shoots 4 different rays through each pixel of the film plane
                 // These 4 rays are designed to be random in each of the four quadrants of the pixel
                 if (SUPERSAMPLING) {
@@ -114,6 +125,9 @@ void Camera::render(World* world)
             }
             outfile << std::endl;
         }
+        auto finish = std::chrono::steady_clock::now();
+        double elapsed_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(finish - start).count();
+        std::cout << "Ray Tracing Took : " << elapsed_seconds << " seconds." << std::endl;
 
         // Need to verify that intersection happens at a point past the film plane - TODO
 
