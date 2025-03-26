@@ -28,7 +28,7 @@ const float PI = 3.14159265358979323846;
 const bool SUPERSAMPLING = true;
 
 // KD-Tree Stuff
-const bool USE_KD_TREES = false;
+const bool USE_KD_TREES = true;
 const bool USE_SURFACE_AREA_HEURISTIC = true;
 const bool IGNORE_MIN_SPLIT_PLANE = true;
 const float COST_OF_TRAVERSAL = 1.0f;

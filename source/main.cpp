@@ -104,14 +104,14 @@ void addBallScene(World* world)
     Sphere* sphere = new Sphere(0.1, 1, 4.5, 1.0f);
     sphere->setColor(Color(1, 0, 0));
     sphere->setIlluminationModel(spherePhong);
-    sphere->setKReflection(0.9f);
+    sphere->setKReflection(0.3f);
     sphere->setMaxDepth(7);
 
     Sphere* sphere2 = new Sphere(2.3, -0.2, 2.2, 1.3f);
     sphere2->setColor(Color(0, 0, 1));
     sphere2->setIlluminationModel(sphere2Phong);
-    // sphere2->setKReflection(1.0f);
-    // sphere2->setMaxDepth(2);
+    sphere2->setKReflection(0.3f);
+    sphere2->setMaxDepth(7);
 
     Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
     floor1->setColor(Color(0, 1, 0));
