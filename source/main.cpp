@@ -92,10 +92,10 @@ void addBallScene(World* world)
 
     Checkerboard* floorCheckerboard
         = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
-    floorCheckerboard->setPerlinNoise(true);
+    floorCheckerboard->setPerlinNoise(false);
     Checkerboard* floor2Checkerboard
         = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
-    floor2Checkerboard->setPerlinNoise(true);
+    floor2Checkerboard->setPerlinNoise(false);
 
     // Mandelbrot* floorMandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
     // Mandelbrot* floor2Mandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
@@ -104,10 +104,14 @@ void addBallScene(World* world)
     Sphere* sphere = new Sphere(0.1, 1, 4.5, 1.0f);
     sphere->setColor(Color(1, 0, 0));
     sphere->setIlluminationModel(spherePhong);
+    sphere->setKReflection(0.3f);
+    sphere->setMaxDepth(7);
 
-    Sphere* sphere2 = new Sphere(2.3, -0.3, 2.2, 1.3f);
+    Sphere* sphere2 = new Sphere(2.3, -0.2, 2.2, 1.3f);
     sphere2->setColor(Color(0, 0, 1));
     sphere2->setIlluminationModel(sphere2Phong);
+    sphere2->setKReflection(0.3f);
+    sphere2->setMaxDepth(7);
 
     Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
     floor1->setColor(Color(0, 1, 0));
@@ -134,12 +138,14 @@ int main(int argc, char* argv[])
     // World will get destroyed after camera render
     World* world = new World();
 
-    // addBallScene(world);
-    Color bunny1Color(1.0f, 0.0f, 0.0f);
-    float bunny1ScaleAmount = 40.0f;
-    Eigen::Vector3d bunny1RotateVec(0, 0, 0);
-    Eigen::Vector3d bunny1TranslateVec(0, -3.0f, 0);
-    addBunny(world, bunny1Color, bunny1ScaleAmount, bunny1RotateVec, bunny1TranslateVec);
+    addBallScene(world);
+
+    // Color bunny1Color(1.0f, 0.0f, 0.0f);
+    // float bunny1ScaleAmount = 40.0f;
+    // Eigen::Vector3d bunny1RotateVec(0, 0, 0);
+    // Eigen::Vector3d bunny1TranslateVec(0, -3.0f, 0);
+    // addBunny(world, bunny1Color, bunny1ScaleAmount, bunny1RotateVec, bunny1TranslateVec);
+
     // addArmadillo(world);
     // addMahoraga(world);
 

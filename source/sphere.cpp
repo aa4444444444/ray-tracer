@@ -47,12 +47,15 @@ Intersection* Sphere::intersect(Ray* ray)
     } else {
         float root_1 = (-1 * b + sqrt(discriminant)) / 2.0;
         float root_2 = (-1 * b - sqrt(discriminant)) / 2.0;
-        if (root_1 < 0) {
-            omega = root_2;
-        } else if (root_2 < 0) {
-            omega = root_1;
-        } else {
+
+        if (root_1 > 0 && root_2 > 0) {
             omega = std::min(root_1, root_2);
+        } else if (root_1 > 0) {
+            omega = root_1;
+        } else if (root_2 > 0) {
+            omega = root_2;
+        } else {
+            return nullptr; // Both intersections are behind the ray's origin
         }
     }
 
