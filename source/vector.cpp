@@ -37,3 +37,10 @@ void Vector::transform(const Eigen::Matrix4d& transMat)
     m_vector(1) = result(1) / result(3);
     m_vector(2) = result(2) / result(3);
 }
+
+void Vector::translate(const Eigen::Vector3d& transVec)
+{
+    m_vector(0) += transVec(0);
+    m_vector(1) += transVec(1);
+    m_vector(2) += transVec(2);
+}

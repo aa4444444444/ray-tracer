@@ -357,7 +357,35 @@ Radiance World::spawnRay(Ray* ray, int depth)
                 }
                 // Transmission
                 if (closestObject->getKTransmission() > 0.0f) {
-                    // WIP
+                    Vector normal = closestIntersection->getNormal();
+                    Vector direction = ray->getDirection();
+
+                    Vector transmission = findTransmission(direction, normal, INDEX_REFRACTION_AIR,
+                        closestIntersection->getObject()->getIndexOfRefraction());
+                    transmission.normalize();
+
+                    bool inside = normal.dot(&direction) >= 0;
+                    Point transmissionPoint = closestIntersection->getIntersectionPoint();
+                    if (inside) {
+                        transmissionPoint.translate(closestIntersection->getNormal().getVector() * 0.01f);
+                    } else {
+                        transmissionPoint.translate(closestIntersection->getNormal().getVector() * -0.01f);
+                    }
+
+                    Ray* transmissionRay = new Ray(transmissionPoint, transmission);
+
+                    // Intersection* wtf = closestObject->intersect(transmissionRay);
+
+                    // if (wtf != nullptr) {
+                    //     std::cout << "SELF INTERSECTION DETECTED WHILE REFRACTING" << std::endl;
+                    //     delete wtf;
+                    // }
+
+                    Radiance refractionContribution = spawnRay(transmissionRay, depth + 1);
+                    refractionContribution.scaleRadiance(closestObject->getKTransmission());
+                    closestObjectRadiance.scaleRadiance(1.0f - closestObject->getKTransmission());
+                    closestObjectRadiance.addRadiance(refractionContribution);
+                    delete transmissionRay;
                 }
             }
 

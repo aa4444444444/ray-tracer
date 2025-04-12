@@ -104,7 +104,9 @@ void addBallScene(World* world)
     Sphere* sphere = new Sphere(0.1, 1, 4.5, 1.0f);
     sphere->setColor(Color(1, 0, 0));
     sphere->setIlluminationModel(spherePhong);
-    sphere->setKReflection(0.3f);
+    sphere->setKReflection(0.0f);
+    sphere->setKTransmission(0.9f);
+    sphere->setIndexOfRefraction(1.0f);
     sphere->setMaxDepth(7);
 
     Sphere* sphere2 = new Sphere(2.3, -0.2, 2.2, 1.3f);
