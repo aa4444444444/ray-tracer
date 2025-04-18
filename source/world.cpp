@@ -163,6 +163,8 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode, int depth)
             }
 
             closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
+            closestObjectRadiance.scaleRadiance(
+                1.0f - (closestObject->getKReflection() + closestObject->getKTransmission()));
 
             // Reflection and Transmission
             if (depth < closestObject->getMaxDepth()) {
@@ -182,13 +184,32 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode, int depth)
 
                     Radiance reflectionContribution = spawnRay(reflectionRay, depth + 1);
                     reflectionContribution.scaleRadiance(closestObject->getKReflection());
-                    closestObjectRadiance.scaleRadiance(1.0f - closestObject->getKReflection());
                     closestObjectRadiance.addRadiance(reflectionContribution);
                     delete reflectionRay;
                 }
                 // Transmission
                 if (closestObject->getKTransmission() > 0.0f) {
-                    // WIP
+                    Vector normal = closestIntersection->getNormal();
+                    Vector direction = ray->getDirection();
+
+                    Vector transmission = findTransmission(direction, normal, INDEX_REFRACTION_AIR,
+                        closestIntersection->getObject()->getIndexOfRefraction());
+                    transmission.normalize();
+
+                    bool inside = normal.dot(&direction) >= 0;
+                    Point transmissionPoint = closestIntersection->getIntersectionPoint();
+                    if (inside) {
+                        transmissionPoint.translate(closestIntersection->getNormal().getVector() * 0.01f);
+                    } else {
+                        transmissionPoint.translate(closestIntersection->getNormal().getVector() * -0.01f);
+                    }
+
+                    Ray* transmissionRay = new Ray(transmissionPoint, transmission);
+
+                    Radiance refractionContribution = spawnRay(transmissionRay, depth + 1);
+                    refractionContribution.scaleRadiance(closestObject->getKTransmission());
+                    closestObjectRadiance.addRadiance(refractionContribution);
+                    delete transmissionRay;
                 }
             }
 
@@ -332,6 +353,8 @@ Radiance World::spawnRay(Ray* ray, int depth)
             }
 
             closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
+            closestObjectRadiance.scaleRadiance(
+                1.0f - (closestObject->getKReflection() + closestObject->getKTransmission()));
 
             // Reflection and Transmission
             if (depth < closestObject->getMaxDepth()) {
@@ -342,16 +365,15 @@ Radiance World::spawnRay(Ray* ray, int depth)
                     reflectionPoint.translate(closestIntersection->getNormal().getVector() * 0.01f);
                     Ray* reflectionRay = new Ray(reflectionPoint, reflection);
 
-                    Intersection* wtf = closestObject->intersect(reflectionRay);
+                    Intersection* selfIntersection = closestObject->intersect(reflectionRay);
 
-                    if (wtf != nullptr) {
+                    if (selfIntersection != nullptr) {
                         std::cout << "SELF INTERSECTION DETECTED WHILE REFLECTING" << std::endl;
-                        delete wtf;
+                        delete selfIntersection;
                     }
 
                     Radiance reflectionContribution = spawnRay(reflectionRay, depth + 1);
                     reflectionContribution.scaleRadiance(closestObject->getKReflection());
-                    closestObjectRadiance.scaleRadiance(1.0f - closestObject->getKReflection());
                     closestObjectRadiance.addRadiance(reflectionContribution);
                     delete reflectionRay;
                 }
@@ -374,16 +396,8 @@ Radiance World::spawnRay(Ray* ray, int depth)
 
                     Ray* transmissionRay = new Ray(transmissionPoint, transmission);
 
-                    // Intersection* wtf = closestObject->intersect(transmissionRay);
-
-                    // if (wtf != nullptr) {
-                    //     std::cout << "SELF INTERSECTION DETECTED WHILE REFRACTING" << std::endl;
-                    //     delete wtf;
-                    // }
-
                     Radiance refractionContribution = spawnRay(transmissionRay, depth + 1);
                     refractionContribution.scaleRadiance(closestObject->getKTransmission());
-                    closestObjectRadiance.scaleRadiance(1.0f - closestObject->getKTransmission());
                     closestObjectRadiance.addRadiance(refractionContribution);
                     delete transmissionRay;
                 }
