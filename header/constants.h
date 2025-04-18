@@ -23,6 +23,7 @@ const float BACKGROUND_RADIANCE_BLUE = 95.29;
 
 // Math Constants
 const float PI = 3.14159265358979323846;
+const float INDEX_REFRACTION_AIR = 1.0f;
 
 // Supersampling toggle
 const bool SUPERSAMPLING = true;

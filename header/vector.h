@@ -22,6 +22,7 @@ public:
     float dot(Vector* v);
     void scale(float scale);
     void transform(const Eigen::Matrix4d& transMat);
+    void translate(const Eigen::Vector3d& transVec);
 
 private:
     Eigen::Vector3d m_vector;

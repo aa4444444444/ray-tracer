@@ -43,6 +43,8 @@ public:
     void setKReflection(float kReflection) { m_kReflection = kReflection; }
     float getKTransmission() { return m_kTransmission; }
     void setKTransmission(float kTransmission) { m_kTransmission = kTransmission; }
+    float getIndexOfRefraction() { return m_indexOfRefraction; }
+    void setIndexOfRefraction(float index) { m_indexOfRefraction = index; }
     int getMaxDepth() { return m_maxDepth; }
     void setMaxDepth(int maxDepth) { m_maxDepth = maxDepth; }
     virtual ~Object()
@@ -75,6 +77,7 @@ protected:
     // Reflection and Transmission constants
     float m_kReflection = 0.0f;
     float m_kTransmission = 0.0f;
+    float m_indexOfRefraction = 1.0f;
     int m_maxDepth = 0;
 
 private:
