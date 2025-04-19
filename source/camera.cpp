@@ -65,6 +65,9 @@ void Camera::render(World* world)
             -1 * FILM_PLANE_WIDTH / 2.0 + pixelWidth / 2.0, FILM_PLANE_HEIGHT / 2.0 - pixelHeight / 2.0, -FOCAL_LENGTH);
 
         auto start = std::chrono::steady_clock::now();
+
+        std::vector<Radiance> radianceMap;
+        float logSum = 0.0;
         // Loop through the film plane
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
@@ -102,10 +105,11 @@ void Camera::render(World* world)
 
                     // Averaging the radiances
                     totalRadiance.scaleRadiance(0.25);
-                    totalRadiance.capRadiance();
+                    // totalRadiance.capRadiance();
 
-                    Color c = Color(totalRadiance);
-                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                    radianceMap.push_back(totalRadiance);
+
+                    logSum += std::log(totalRadiance.getIlluminance() + 0.0001f);
 
                     delete ray1;
                     delete ray2;
@@ -117,11 +121,28 @@ void Camera::render(World* world)
                     Ray* ray = new Ray(
                         0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
                     Radiance radiance = world->spawnRay(ray);
-                    radiance.capRadiance();
-                    Color c = Color(radiance);
-                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                    // radiance.capRadiance();
+
+                    radianceMap.push_back(radiance);
+                    logSum += std::log(radiance.getIlluminance() + 0.0001f);
+
                     delete ray;
                 }
+            }
+        }
+
+        float logAverageIlluminance = std::exp(logSum / (IMAGE_HEIGHT * IMAGE_WIDTH));
+        float scaleFactorNumerator = 1.219f + std::pow(MAXIMUM_DISPLAY_ILLUMINANCE / 2.0f, 0.4f);
+        float scaleFactorDenominator = 1.219f + std::pow(logAverageIlluminance, 0.4f);
+        float scaleFactor = std::pow(scaleFactorNumerator / scaleFactorDenominator, 2.5f);
+        // Tone Reproduction
+        for (int i = 0; i < IMAGE_HEIGHT; i++) {
+            for (int j = 0; j < IMAGE_WIDTH; j++) {
+                Radiance radiance = radianceMap.at(i * IMAGE_WIDTH + j);
+                radiance.scaleRadiance(scaleFactor);
+                radiance.capRadiance();
+                Color c = Color(radiance);
+                outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
             }
             outfile << std::endl;
         }

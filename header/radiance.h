@@ -22,6 +22,7 @@ public:
     void capRadiance();
     void addRadiance(Radiance r);
     void scaleRadiance(float scale);
+    float getIlluminance();
 
 private:
     float m_red;

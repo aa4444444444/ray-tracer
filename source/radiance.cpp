@@ -56,3 +56,5 @@ void Radiance::scaleRadiance(float scale)
     m_green *= scale;
     m_blue *= scale;
 }
+
+float Radiance::getIlluminance() { return 0.27 * m_red + 0.67 * m_green + 0.06 * m_blue; }

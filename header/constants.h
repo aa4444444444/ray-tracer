@@ -16,10 +16,14 @@ const float CAMERA_UP_Z = 0.0;
 const float CAMERA_LOOKAT_X = 0.0;
 const float CAMERA_LOOKAT_Y = 0.0;
 const float CAMERA_LOOKAT_Z = 0.0;
-const float MAXIMUM_IRRADIANCE = 100.0;
 const float BACKGROUND_RADIANCE_RED = 25.49;
 const float BACKGROUND_RADIANCE_GREEN = 60.39;
 const float BACKGROUND_RADIANCE_BLUE = 95.29;
+
+// Tone Reproduction
+const int WHICH_TONE_REPRODUCTION = 0;
+const float MAXIMUM_IRRADIANCE = 100.0;
+const float MAXIMUM_DISPLAY_ILLUMINANCE = 100.0;
 
 // Math Constants
 const float PI = 3.14159265358979323846;
