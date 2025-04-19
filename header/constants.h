@@ -23,7 +23,6 @@ const float BACKGROUND_RADIANCE_BLUE = 95.29;
 // Tone Reproduction
 const int WHICH_TONE_REPRODUCTION = 0;
 const float MAXIMUM_IRRADIANCE = 100.0;
-const float MAXIMUM_DISPLAY_ILLUMINANCE = 100.0;
 
 // Math Constants
 const float PI = 3.14159265358979323846;
