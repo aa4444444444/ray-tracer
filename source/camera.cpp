@@ -65,6 +65,10 @@ void Camera::render(World* world)
             -1 * FILM_PLANE_WIDTH / 2.0 + pixelWidth / 2.0, FILM_PLANE_HEIGHT / 2.0 - pixelHeight / 2.0, -FOCAL_LENGTH);
 
         auto start = std::chrono::steady_clock::now();
+
+        std::vector<Radiance> radianceMap;
+        float logSum = 0.0f;
+        float maxIlluminance = 0.0f;
         // Loop through the film plane
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
@@ -102,10 +106,14 @@ void Camera::render(World* world)
 
                     // Averaging the radiances
                     totalRadiance.scaleRadiance(0.25);
-                    totalRadiance.capRadiance();
+                    radianceMap.push_back(totalRadiance);
 
-                    Color c = Color(totalRadiance);
-                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                    float illuminance = totalRadiance.getIlluminance();
+                    if (illuminance > maxIlluminance) {
+                        maxIlluminance = illuminance;
+                    }
+
+                    logSum += std::log(illuminance + 0.0001f);
 
                     delete ray1;
                     delete ray2;
@@ -117,14 +125,79 @@ void Camera::render(World* world)
                     Ray* ray = new Ray(
                         0, 0, 0, topLeftRay(0) + j * pixelWidth, topLeftRay(1) - i * pixelHeight, topLeftRay(2));
                     Radiance radiance = world->spawnRay(ray);
-                    radiance.capRadiance();
-                    Color c = Color(radiance);
-                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                    radianceMap.push_back(radiance);
+
+                    float illuminance = radiance.getIlluminance();
+                    if (illuminance > maxIlluminance) {
+                        maxIlluminance = illuminance;
+                    }
+
+                    logSum += std::log(illuminance + 0.0001f);
+
                     delete ray;
                 }
             }
-            outfile << std::endl;
         }
+
+        float logAverageIlluminance = std::exp(logSum / (IMAGE_HEIGHT * IMAGE_WIDTH));
+
+        // Ward TR
+        if (WHICH_TONE_REPRODUCTION == 0) {
+            float scaleFactorNumerator = 1.219f + std::pow(maxIlluminance / 2.0f, 0.4f);
+            float scaleFactorDenominator = 1.219f + std::pow(logAverageIlluminance, 0.4f);
+            float scaleFactor = std::pow(scaleFactorNumerator / scaleFactorDenominator, 2.5f);
+            // Tone Reproduction
+            for (int i = 0; i < IMAGE_HEIGHT; i++) {
+                for (int j = 0; j < IMAGE_WIDTH; j++) {
+                    Radiance radianceTarget = radianceMap.at(i * IMAGE_WIDTH + j);
+                    radianceTarget.scaleRadiance(scaleFactor);
+                    radianceTarget.capRadiance();
+                    Color c = Color(radianceTarget);
+                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                }
+                outfile << std::endl;
+            }
+        } else {
+            // Reinhard TR
+            // Key value will be log average luminance
+
+            float scaleFactor;
+            if (REINHARD_USE_LOG_AVERAGE) {
+                scaleFactor = 0.18f / logAverageIlluminance;
+            } else if (REINHARD_USE_USER_CONSTANT) {
+                scaleFactor = 0.18f / REINHARD_USER_CONSTANT;
+            } else if (REINHARD_KEY_VALUE_PIXEL_X >= 0 && REINHARD_KEY_VALUE_PIXEL_X < IMAGE_WIDTH
+                && REINHARD_KEY_VALUE_PIXEL_Y >= 0 && REINHARD_KEY_VALUE_PIXEL_Y < IMAGE_HEIGHT) {
+                scaleFactor = 0.18f
+                    / radianceMap.at(REINHARD_KEY_VALUE_PIXEL_Y * IMAGE_WIDTH + REINHARD_KEY_VALUE_PIXEL_X)
+                          .getIlluminance();
+            } else {
+                // Default to log average
+                scaleFactor = 0.18f / logAverageIlluminance;
+            }
+
+            for (int i = 0; i < IMAGE_HEIGHT; i++) {
+                for (int j = 0; j < IMAGE_WIDTH; j++) {
+                    Radiance radianceTarget = radianceMap.at(i * IMAGE_WIDTH + j);
+
+                    radianceTarget.scaleRadiance(scaleFactor);
+                    float redReflectance = radianceTarget.getRadianceRed() / (1.0f + radianceTarget.getRadianceRed());
+                    float greenReflectance
+                        = radianceTarget.getRadianceGreen() / (1.0f + radianceTarget.getRadianceGreen());
+                    float blueReflectance
+                        = radianceTarget.getRadianceBlue() / (1.0f + radianceTarget.getRadianceBlue());
+
+                    Radiance radianceFinal = Radiance(redReflectance * maxIlluminance,
+                        greenReflectance * maxIlluminance, blueReflectance * maxIlluminance);
+                    radianceFinal.capRadiance();
+
+                    Color c = Color(radianceFinal);
+                    outfile << c.getRed255() << " " << c.getGreen255() << " " << c.getBlue255() << " ";
+                }
+                outfile << std::endl;
+            }
+        }
+
         auto finish = std::chrono::steady_clock::now();
         double elapsed_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(finish - start).count();
         std::cout << "Ray Tracing Took : " << elapsed_seconds << " seconds." << std::endl;
