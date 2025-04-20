@@ -160,7 +160,22 @@ void Camera::render(World* world)
         } else {
             // Reinhard TR
             // Key value will be log average luminance
-            float scaleFactor = 0.18f / logAverageIlluminance;
+
+            float scaleFactor;
+            if (REINHARD_USE_LOG_AVERAGE) {
+                scaleFactor = 0.18f / logAverageIlluminance;
+            } else if (REINHARD_USE_USER_CONSTANT) {
+                scaleFactor = 0.18f / REINHARD_USER_CONSTANT;
+            } else if (REINHARD_KEY_VALUE_PIXEL_X >= 0 && REINHARD_KEY_VALUE_PIXEL_X < IMAGE_WIDTH
+                && REINHARD_KEY_VALUE_PIXEL_Y >= 0 && REINHARD_KEY_VALUE_PIXEL_Y < IMAGE_HEIGHT) {
+                scaleFactor = 0.18f
+                    / radianceMap.at(REINHARD_KEY_VALUE_PIXEL_Y * IMAGE_WIDTH + REINHARD_KEY_VALUE_PIXEL_X)
+                          .getIlluminance();
+            } else {
+                // Default to log average
+                scaleFactor = 0.18f / logAverageIlluminance;
+            }
+
             for (int i = 0; i < IMAGE_HEIGHT; i++) {
                 for (int j = 0; j < IMAGE_WIDTH; j++) {
                     Radiance radianceTarget = radianceMap.at(i * IMAGE_WIDTH + j);
