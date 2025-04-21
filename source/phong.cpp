@@ -34,38 +34,43 @@ Radiance Phong::illuminate(Intersection* intersection)
     // Diffuse & Specular component
     for (size_t i = 0; i < lightSources.size(); i++) {
         LightSource* light = lightSources[i];
-        float lightRadianceRed = light->getRadiance().getRadianceRed();
-        float lightRadianceGreen = light->getRadiance().getRadianceGreen();
-        float lightRadianceBlue = light->getRadiance().getRadianceBlue();
+        if (!light->getIsInShadow()) {
+            float lightRadianceRed = light->getRadiance().getRadianceRed();
+            float lightRadianceGreen = light->getRadiance().getRadianceGreen();
+            float lightRadianceBlue = light->getRadiance().getRadianceBlue();
 
-        Vector normal = intersection->getNormal();
-        Vector view = intersection->getViewingDirection();
-        Vector sourceVector = Vector(intersection->getIntersectionPoint().getPoint() - light->getPosition().getPoint());
-        sourceVector.normalize();
-        Vector reflection = findReflection(sourceVector, intersection->getNormal());
-        sourceVector.scale(-1);
-        Vector halfVector = Vector(sourceVector.getVector() + view.getVector());
-        halfVector.normalize();
+            Vector normal = intersection->getNormal();
+            Vector view = intersection->getViewingDirection();
+            Vector sourceVector
+                = Vector(intersection->getIntersectionPoint().getPoint() - light->getPosition().getPoint());
+            sourceVector.normalize();
+            Vector reflection = findReflection(sourceVector, intersection->getNormal());
+            sourceVector.scale(-1);
+            Vector halfVector = Vector(sourceVector.getVector() + view.getVector());
+            halfVector.normalize();
 
-        float sourceDotNormal = std::max(0.0f, sourceVector.dot(&normal));
+            float sourceDotNormal = std::max(0.0f, sourceVector.dot(&normal));
 
-        float specularPortion;
+            float specularPortion;
 
-        if (m_isPhongBlinn) {
-            specularPortion = pow(std::max(0.0f, halfVector.dot(&normal)), m_ke);
-        } else {
-            specularPortion = pow(std::max(0.0f, reflection.dot(&view)), m_ke);
+            if (m_isPhongBlinn) {
+                specularPortion = pow(std::max(0.0f, halfVector.dot(&normal)), m_ke);
+            } else {
+                specularPortion = pow(std::max(0.0f, reflection.dot(&view)), m_ke);
+            }
+
+            // Diffuse
+            radianceComponentRed += m_kd * lightRadianceRed * objectColor.getRed() * sourceDotNormal;
+            radianceComponentGreen += m_kd * lightRadianceGreen * objectColor.getGreen() * sourceDotNormal;
+            radianceComponentBlue += m_kd * lightRadianceBlue * objectColor.getBlue() * sourceDotNormal;
+
+            // Specular
+            radianceComponentRed += m_ks * lightRadianceRed * specColor.getRed() * specularPortion;
+            radianceComponentGreen += m_ks * lightRadianceGreen * specColor.getGreen() * specularPortion;
+            radianceComponentBlue += m_ks * lightRadianceBlue * specColor.getBlue() * specularPortion;
         }
-
-        // Diffuse
-        radianceComponentRed += m_kd * lightRadianceRed * objectColor.getRed() * sourceDotNormal;
-        radianceComponentGreen += m_kd * lightRadianceGreen * objectColor.getGreen() * sourceDotNormal;
-        radianceComponentBlue += m_kd * lightRadianceBlue * objectColor.getBlue() * sourceDotNormal;
-
-        // Specular
-        radianceComponentRed += m_ks * lightRadianceRed * specColor.getRed() * specularPortion;
-        radianceComponentGreen += m_ks * lightRadianceGreen * specColor.getGreen() * specularPortion;
-        radianceComponentBlue += m_ks * lightRadianceBlue * specColor.getBlue() * specularPortion;
+        // Reset light once we're done.
+        light->setIsInShadow(false);
     }
 
     return Radiance(radianceComponentRed, radianceComponentGreen, radianceComponentBlue);

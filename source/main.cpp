@@ -102,10 +102,10 @@ void addBallScene(World* world)
 
     // Create objects here !!!Make sure they're dynamically allocated - they will get destroyed by the world
     Sphere* sphere = new Sphere(0.1, 1, 4.5, 1.0f);
-    sphere->setColor(Color(1, 1, 1));
+    sphere->setColor(Color(1, 0, 0));
     sphere->setIlluminationModel(spherePhong);
     sphere->setKReflection(0.0f);
-    sphere->setKTransmission(0.8f);
+    sphere->setKTransmission(0.0f);
     sphere->setIndexOfRefraction(1.0f);
     sphere->setMaxDepth(7);
 
@@ -193,10 +193,12 @@ int main(int argc, char* argv[])
 
     // Create light source here!!!
     // Light sources get destroyed by the world
-    LightSource* light = new LightSource(Point(0, 8, 8), Radiance(100.0, 100.0, 100.0));
+    LightSource* light = new LightSource(Point(0, 8, 8), Radiance(50.0, 50.0, 50.0));
+    LightSource* light2 = new LightSource(Point(4, 1, 8), Radiance(50.0, 50.0, 50.0));
 
     // add light to the scene
     world->addLightSource(light);
+    world->addLightSource(light2);
 
     // Set up the camera and render the world
     Camera* camera = new Camera(CAMERA_POS_X, CAMERA_POS_Y, CAMERA_POS_Z, CAMERA_LOOKAT_X, CAMERA_LOOKAT_Y,
