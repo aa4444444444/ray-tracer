@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
 
     // Create light source here!!!
     // Light sources get destroyed by the world
-    LightSource* light = new LightSource(Point(0, 8, 8), Radiance(300.0, 300.0, 300.0));
+    LightSource* light = new LightSource(Point(0, 8, 8), Radiance(100.0, 100.0, 100.0));
 
     // add light to the scene
     world->addLightSource(light);
