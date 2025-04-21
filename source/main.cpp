@@ -3,6 +3,7 @@
 #include "../header/checkerboard.h"
 #include "../header/color.h"
 #include "../header/constants.h"
+#include "../header/cylinder.h"
 #include "../header/happly.h"
 #include "../header/light_source.h"
 #include "../header/mandelbrot.h"
@@ -172,6 +173,49 @@ void addRefractionTest(World* world)
     world->addModelObject(floor2);
 }
 
+void addShapeTest(World* world)
+{
+    // Illumination Models
+
+    Phong* cylinderPhong = new Phong(0.9, 0.3, 0.65, 50);
+    cylinderPhong->setPhongBlinn(true);
+
+    Phong* floorPhong = new Phong(0.2, 0.7, 0.3, 2);
+    Phong* floor2Phong = new Phong(0.2, 0.7, 0.3, 2);
+
+    Checkerboard* floorCheckerboard
+        = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
+    floorCheckerboard->setPerlinNoise(false);
+    Checkerboard* floor2Checkerboard
+        = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
+    floor2Checkerboard->setPerlinNoise(false);
+
+    // Create objects here !!!Make sure they're dynamically allocated - they will get destroyed by the world
+    Cylinder* cylinder = new Cylinder(Point(0.0, 0.2, 4.0), Point(0.0, 2.0, 4.0), 1.0f);
+    cylinder->setColor(Color(0, 0, 1));
+    cylinder->setIlluminationModel(cylinderPhong);
+    cylinder->setKReflection(0.4f);
+    cylinder->setKTransmission(0.0f);
+    cylinder->setIndexOfRefraction(1.0f);
+    cylinder->setMaxDepth(7);
+
+    Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
+    floor1->setColor(Color(0, 1, 0));
+    floor1->setIlluminationModel(floorPhong);
+    floor1->setTexture(floorCheckerboard);
+    floor1->setTexturePoints(Eigen::Vector2d(0.0f, 0.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(0.0f, 1.0f));
+
+    Triangle* floor2 = new Triangle(7, -1.5, -60, -3, -1.5, 10, 7, -1.5, 10);
+    floor2->setColor(Color(0, 1, 0));
+    floor2->setIlluminationModel(floor2Phong);
+    floor2->setTexture(floor2Checkerboard);
+    floor2->setTexturePoints(Eigen::Vector2d(0.0f, 1.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(1.0f, 1.0f));
+
+    world->addModelObject(cylinder);
+    world->addModelObject(floor1);
+    world->addModelObject(floor2);
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -180,25 +224,17 @@ int main(int argc, char* argv[])
     World* world = new World();
 
     addBallScene(world);
+    // addShapeTest(world);
     // addRefractionTest(world);
-
-    // Color bunny1Color(1.0f, 0.0f, 0.0f);
-    // float bunny1ScaleAmount = 40.0f;
-    // Eigen::Vector3d bunny1RotateVec(0, 0, 0);
-    // Eigen::Vector3d bunny1TranslateVec(0, -3.0f, 0);
-    // addBunny(world, bunny1Color, bunny1ScaleAmount, bunny1RotateVec, bunny1TranslateVec);
-
-    // addArmadillo(world);
-    // addMahoraga(world);
 
     // Create light source here!!!
     // Light sources get destroyed by the world
-    LightSource* light = new LightSource(Point(0, 8, 8), Radiance(50.0, 50.0, 50.0));
-    LightSource* light2 = new LightSource(Point(4, 1, 8), Radiance(50.0, 50.0, 50.0));
+    LightSource* light = new LightSource(Point(0, 3, 8), Radiance(100.0, 100.0, 100.0));
+    // LightSource* light2 = new LightSource(Point(4, 1, 8), Radiance(50.0, 50.0, 50.0));
 
     // add light to the scene
     world->addLightSource(light);
-    world->addLightSource(light2);
+    // world->addLightSource(light2);
 
     // Set up the camera and render the world
     Camera* camera = new Camera(CAMERA_POS_X, CAMERA_POS_Y, CAMERA_POS_Z, CAMERA_LOOKAT_X, CAMERA_LOOKAT_Y,

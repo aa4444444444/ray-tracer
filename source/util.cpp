@@ -50,3 +50,15 @@ float randomBetweenInclusive(float upperBound)
 {
     return upperBound * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
 }
+
+// Determines the sign of a float. Returns -1.0 if less than 0, 0.0 if equal to 0, and 1.0 if greater
+float sign(float flo)
+{
+    if (flo < 0.0f) {
+        return -1.0f;
+    } else if (flo == 0.0f) {
+        return 0.0f;
+    } else {
+        return 1.0f;
+    }
+}
