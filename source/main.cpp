@@ -2,6 +2,7 @@
 #include "../header/camera.h"
 #include "../header/checkerboard.h"
 #include "../header/color.h"
+#include "../header/cone.h"
 #include "../header/constants.h"
 #include "../header/cylinder.h"
 #include "../header/happly.h"
@@ -183,8 +184,8 @@ void addShapeTest(World* world)
 {
     // Illumination Models
 
-    Phong* cylinderPhong = new Phong(0.9, 0.3, 0.65, 50);
-    cylinderPhong->setPhongBlinn(true);
+    Phong* conePhong = new Phong(0.9, 0.3, 0.65, 50);
+    conePhong->setPhongBlinn(true);
 
     Phong* floorPhong = new Phong(0.2, 0.7, 0.3, 2);
     Phong* floor2Phong = new Phong(0.2, 0.7, 0.3, 2);
@@ -197,13 +198,13 @@ void addShapeTest(World* world)
     floor2Checkerboard->setPerlinNoise(false);
 
     // Create objects here !!!Make sure they're dynamically allocated - they will get destroyed by the world
-    Cylinder* cylinder = new Cylinder(Point(0.0, 0.2, 4.0), Point(0.0, 2.0, 4.0), 1.0f);
-    cylinder->setColor(Color(0, 0, 1));
-    cylinder->setIlluminationModel(cylinderPhong);
-    cylinder->setKReflection(0.4f);
-    cylinder->setKTransmission(0.0f);
-    cylinder->setIndexOfRefraction(1.0f);
-    cylinder->setMaxDepth(7);
+    Cone* cone = new Cone(Point(0.0, 0.2, 4.0), Point(0.0, 2.0, 4.0), 1.0f);
+    cone->setColor(Color(0, 0, 1));
+    cone->setIlluminationModel(conePhong);
+    cone->setKReflection(0.0f);
+    cone->setKTransmission(0.9f);
+    cone->setIndexOfRefraction(1.0f);
+    cone->setMaxDepth(7);
 
     Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
     floor1->setColor(Color(0, 1, 0));
@@ -217,7 +218,7 @@ void addShapeTest(World* world)
     floor2->setTexture(floor2Checkerboard);
     floor2->setTexturePoints(Eigen::Vector2d(0.0f, 1.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(1.0f, 1.0f));
 
-    world->addModelObject(cylinder);
+    world->addModelObject(cone);
     world->addModelObject(floor1);
     world->addModelObject(floor2);
 }
@@ -229,8 +230,8 @@ int main(int argc, char* argv[])
     // World will get destroyed after camera render
     World* world = new World();
 
-    addBallScene(world);
-    // addShapeTest(world);
+    // addBallScene(world);
+    addShapeTest(world);
     // addRefractionTest(world);
 
     // Create light source here!!!
