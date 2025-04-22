@@ -122,8 +122,6 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode, int depth)
             viewingDirection.scale(-1);
             closestIntersection->setViewingDirection(viewingDirection);
 
-            bool isShadow = false;
-
             // Looping through the rest of the object list to see if the point is illuminated
             // If not illuminated, point is 'in shadow'.
             // We want to loop through the 'model objects' otherwise this will take forever to

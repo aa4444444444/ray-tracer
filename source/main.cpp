@@ -5,12 +5,15 @@
 #include "../header/constants.h"
 #include "../header/cylinder.h"
 #include "../header/happly.h"
+#include "../header/image_texture.h"
 #include "../header/light_source.h"
 #include "../header/mandelbrot.h"
 #include "../header/phong.h"
 #include "../header/ply_model.h"
 #include "../header/point.h"
 #include "../header/sphere.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../header/stb_image.h"
 #include "../header/triangle.h"
 #include "../header/vector.h"
 #include "../header/world.h"
@@ -91,12 +94,15 @@ void addBallScene(World* world)
     Phong* floorPhong = new Phong(0.2, 0.7, 0.3, 2);
     Phong* floor2Phong = new Phong(0.2, 0.7, 0.3, 2);
 
-    Checkerboard* floorCheckerboard
-        = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
-    floorCheckerboard->setPerlinNoise(false);
-    Checkerboard* floor2Checkerboard
-        = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
-    floor2Checkerboard->setPerlinNoise(false);
+    // Checkerboard* floorCheckerboard
+    //     = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
+    // floorCheckerboard->setPerlinNoise(false);
+    // Checkerboard* floor2Checkerboard
+    //     = new Checkerboard(Color(1.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 0.0f), 70.0f, 10.0f, 0.1f, 1000.0f);
+    // floor2Checkerboard->setPerlinNoise(false);
+
+    ImageTexture* floorImage = new ImageTexture("textures/cowboy.png");
+    ImageTexture* floor2Image = new ImageTexture("textures/cowboy.png");
 
     // Mandelbrot* floorMandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
     // Mandelbrot* floor2Mandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
@@ -119,13 +125,13 @@ void addBallScene(World* world)
     Triangle* floor1 = new Triangle(-3, -1.5, -60, -3, -1.5, 10, 7, -1.5, -60);
     floor1->setColor(Color(0, 1, 0));
     floor1->setIlluminationModel(floorPhong);
-    floor1->setTexture(floorCheckerboard);
+    floor1->setTexture(floorImage);
     floor1->setTexturePoints(Eigen::Vector2d(0.0f, 0.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(0.0f, 1.0f));
 
     Triangle* floor2 = new Triangle(7, -1.5, -60, -3, -1.5, 10, 7, -1.5, 10);
     floor2->setColor(Color(0, 1, 0));
     floor2->setIlluminationModel(floor2Phong);
-    floor2->setTexture(floor2Checkerboard);
+    floor2->setTexture(floor2Image);
     floor2->setTexturePoints(Eigen::Vector2d(0.0f, 1.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(1.0f, 1.0f));
 
     world->addModelObject(sphere);
