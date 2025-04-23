@@ -49,8 +49,10 @@ public:
 
 private:
     std::vector<PlyModel*> m_plyModels;
-    std::vector<std::vector<Object*>*> m_modelList;
-    std::vector<Object*> m_objectList;
+    // To differentiate between models and primitives, we have two lists for them.
+    // Models may have one more more primitives
+    std::vector<std::vector<Object*>*> m_modelList; // Models
+    std::vector<Object*> m_objectList; // Primitives
     std::vector<LightSource*> m_lightSourceList;
     std::vector<AxisAlignedBoundingBox*> m_aabbList;
     KdTreeNode* m_sceneKDTree;

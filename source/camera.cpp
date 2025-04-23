@@ -69,7 +69,7 @@ void Camera::render(World* world)
         std::vector<Radiance> radianceMap;
         float logSum = 0.0f;
         float maxIlluminance = 0.0f;
-        // Loop through the film plane
+        // Loop through the film plane and populate radiance map
         for (int i = 0; i < IMAGE_HEIGHT; i++) {
             for (int j = 0; j < IMAGE_WIDTH; j++) {
 

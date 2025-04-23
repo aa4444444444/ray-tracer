@@ -67,6 +67,7 @@ void World::addPlyModel(PlyModel* plyModel)
 
 void World::addLightSource(LightSource* lightSource) { m_lightSourceList.push_back(lightSource); }
 
+// Main code for rendering a scene with a KD-Tree
 FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode, int depth)
 {
     // If leaf we just find intersection of objects in bounding box

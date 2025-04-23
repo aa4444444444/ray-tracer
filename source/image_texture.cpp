@@ -47,7 +47,6 @@ Color ImageTexture::getColor(Intersection* intersection)
     float u = textureUV(0);
     float v = textureUV(1);
 
-    // Flip v because image origin is top-left
     int x = static_cast<int>(u * m_width);
     int y = static_cast<int>(v * m_height);
 

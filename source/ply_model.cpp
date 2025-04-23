@@ -2,7 +2,6 @@
 #include "../header/phong.h"
 #include "../header/world.h"
 
-// TODO: Give user the ability to customize the BRDF and stuff
 PlyModel::PlyModel(std::vector<float> vertexX, std::vector<float> vertexY, std::vector<float> vertexZ,
     std::vector<std::vector<int>> indices, Color c, float scaleAmount, const Eigen::Vector3d& rotateVec,
     const Eigen::Vector3d& translateVec)

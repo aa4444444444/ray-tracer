@@ -18,6 +18,7 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(
 {
     m_xMin = xMin, m_xMax = xMax, m_yMin = yMin, m_yMax = yMax, m_zMin = zMin, m_zMax = zMax, m_Object = object;
 }
+
 const float AxisAlignedBoundingBox::getXMin() { return m_xMin; }
 const float AxisAlignedBoundingBox::getXMax() { return m_xMax; }
 const float AxisAlignedBoundingBox::getYMin() { return m_yMin; }
@@ -33,6 +34,7 @@ void AxisAlignedBoundingBox::setZMin(float zMin) { m_zMin = zMin; }
 void AxisAlignedBoundingBox::setZMax(float zMax) { m_zMax = zMax; }
 void AxisAlignedBoundingBox::setObject(Object* object) { m_Object = object; }
 float AxisAlignedBoundingBox::getVolume() { return (m_xMax - m_xMin) * (m_yMax - m_yMin) * (m_zMax - m_zMin); }
+
 bool AxisAlignedBoundingBox::intersect(AxisAlignedBoundingBox* aabb)
 {
     return (m_xMin <= aabb->getXMax() && m_xMax >= aabb->getXMin())

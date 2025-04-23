@@ -66,7 +66,7 @@ Intersection* Cone::intersect(Ray* ray)
         }
     }
 
-    // Optional: base cap
+    // base cap
     float denom = ca.dot(&d);
     if (fabs(denom) > 1e-6) {
         Vector baseMinusO = Vector((m_base.getPoint() - o.getPoint()));
@@ -83,6 +83,7 @@ Intersection* Cone::intersect(Ray* ray)
         }
     }
 
+    // If we get to this point, no intersection
     return nullptr;
 }
 

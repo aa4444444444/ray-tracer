@@ -1,7 +1,6 @@
 #include "../header/util.h"
 #include <cmath>
 
-// NORMAL SHOULD BE NORMALIZED!!!!!!
 Vector findReflection(Vector vec, Vector normal)
 {
     normal.normalize();
