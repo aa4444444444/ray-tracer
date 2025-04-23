@@ -27,7 +27,7 @@ endef
 
 # Header only files that we depend on
 define DEPS
-header/object.h header/constants.h header/illumination_model.h header/happly.h
+header/object.h header/constants.h header/illumination_model.h header/texture.h
 endef
 
 # Object files

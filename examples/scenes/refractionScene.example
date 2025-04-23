@@ -1,0 +1,38 @@
+void addRefractionTest(World* world)
+{
+    // Illumination Models
+
+    Phong* spherePhong = new Phong(0.9, 0.3, 0.65, 50);
+    spherePhong->setPhongBlinn(true);
+
+    Phong* floorPhong = new Phong(0.2, 0.7, 0.3, 2);
+    Phong* floor2Phong = new Phong(0.2, 0.7, 0.3, 2);
+
+    Mandelbrot* floorMandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
+    Mandelbrot* floor2Mandelbrot = new Mandelbrot(100, 1.0f, -1.5f, 0.0f, 180.0f);
+
+    // Create objects here !!!Make sure they're dynamically allocated - they will get destroyed by the world
+    Sphere* sphere = new Sphere(0.1, 1, 4.5, 1.0f);
+    sphere->setColor(Color(1, 1, 1));
+    sphere->setIlluminationModel(spherePhong);
+    sphere->setKReflection(0.0f);
+    sphere->setKTransmission(0.8f);
+    sphere->setIndexOfRefraction(2.0f);
+    sphere->setMaxDepth(7);
+
+    Triangle* floor1 = new Triangle(-10, 60, -10, -10, -30, -10, 10, 60, -10);
+    floor1->setColor(Color(0, 1, 0));
+    floor1->setIlluminationModel(floorPhong);
+    floor1->setTexture(floorMandelbrot);
+    floor1->setTexturePoints(Eigen::Vector2d(0.0f, 0.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(0.0f, 1.0f));
+
+    Triangle* floor2 = new Triangle(10, 60, -10, -10, -30, -10, 10, -30, -10);
+    floor2->setColor(Color(0, 1, 0));
+    floor2->setIlluminationModel(floor2Phong);
+    floor2->setTexture(floor2Mandelbrot);
+    floor2->setTexturePoints(Eigen::Vector2d(0.0f, 1.0f), Eigen::Vector2d(1.0f, 0.0f), Eigen::Vector2d(1.0f, 1.0f));
+
+    world->addModelObject(sphere);
+    world->addModelObject(floor1);
+    world->addModelObject(floor2);
+}

@@ -1,0 +1,17 @@
+void addBunny(World* world, Color& color, float& scaleAmount, const Eigen::Vector3d& rotateVec,
+    const Eigen::Vector3d& translateVec)
+{
+    // Loading in PLY files
+    happly::PLYData plyIn("plys/bunny/reconstruction/bun_zipper.ply");
+
+    // Get data from the object
+    std::vector<float> vertexX = plyIn.getElement("vertex").getProperty<float>("x");
+    std::vector<float> vertexY = plyIn.getElement("vertex").getProperty<float>("y");
+    std::vector<float> vertexZ = plyIn.getElement("vertex").getProperty<float>("z");
+
+    std::vector<std::vector<int>> indices = plyIn.getElement("face").getListProperty<int>("vertex_indices");
+
+    PlyModel* p = new PlyModel(vertexX, vertexY, vertexZ, indices, color, scaleAmount, rotateVec, translateVec);
+
+    world->addPlyModel(p);
+}

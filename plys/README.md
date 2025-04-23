@@ -1,0 +1,1 @@
+The .PLY files in this repo are NOT MY OWN. Please view the respective licenses/readme's in the folders for more information.
