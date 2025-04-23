@@ -10,3 +10,7 @@
 
 # Don't need output
 output/*
+
+# Don't want files from other repos on here
+header/happly.h
+header/stb_image.h
