@@ -122,8 +122,6 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode, int depth)
             viewingDirection.scale(-1);
             closestIntersection->setViewingDirection(viewingDirection);
 
-            bool isShadow = false;
-
             // Looping through the rest of the object list to see if the point is illuminated
             // If not illuminated, point is 'in shadow'.
             // We want to loop through the 'model objects' otherwise this will take forever to
@@ -133,34 +131,29 @@ FinalRadiance World::traverseKDTree(Ray* ray, KdTreeNode* treeNode, int depth)
 
                 if (closestObject->getModelAddress() != m_modelList[i]) {
 
-                    // As of right now, only checks the first light source
-                    LightSource* light = m_lightSourceList[0];
-                    Vector sourceVector = Vector(
-                        light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
-                    sourceVector.normalize();
-                    Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
+                    for (LightSource* light : m_lightSourceList) {
+                        Vector sourceVector = Vector(
+                            light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
+                        sourceVector.normalize();
+                        Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
 
-                    for (size_t j = 0; j < m_modelList[i]->size(); j++) {
-                        Intersection* lightObjectIntersection = m_modelList[i]->at(j)->intersect(lightSourceRay);
+                        for (size_t j = 0; j < m_modelList[i]->size(); j++) {
+                            Intersection* lightObjectIntersection = m_modelList[i]->at(j)->intersect(lightSourceRay);
 
-                        if (lightObjectIntersection != nullptr) {
-                            isShadow = true;
-                            delete lightObjectIntersection;
-                            delete lightSourceRay;
-                            goto objectInShadowKD;
+                            if (lightObjectIntersection != nullptr) {
+                                light->setIsInShadow(true);
+                                delete lightObjectIntersection;
+                                delete lightSourceRay;
+                                break;
+                            }
                         }
 
-                        delete lightObjectIntersection;
+                        delete lightSourceRay;
                     }
-
-                    delete lightSourceRay;
                 }
             }
 
-        objectInShadowKD:
-            if (!isShadow) {
-                closestIntersection->setLightSources(m_lightSourceList);
-            }
+            closestIntersection->setLightSources(m_lightSourceList);
 
             closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
             closestObjectRadiance.scaleRadiance(
@@ -315,42 +308,35 @@ Radiance World::spawnRay(Ray* ray, int depth)
             viewingDirection.scale(-1);
             closestIntersection->setViewingDirection(viewingDirection);
 
-            bool isShadow = false;
-
             // Looping through the rest of the object list to see if the point is illuminated
             // If not illuminated, point is 'in shadow'
             for (size_t i = 0; i < m_modelList.size(); i++) {
                 // If the object isn't in the model
                 if (closestObject->getModelAddress() != m_modelList[i]) {
 
-                    // As of right now, only checks the first light source
-                    LightSource* light = m_lightSourceList[0];
-                    Vector sourceVector = Vector(
-                        light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
-                    sourceVector.normalize();
-                    Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
+                    for (LightSource* light : m_lightSourceList) {
+                        Vector sourceVector = Vector(
+                            light->getPosition().getPoint() - closestIntersection->getIntersectionPoint().getPoint());
+                        sourceVector.normalize();
+                        Ray* lightSourceRay = new Ray(closestIntersection->getIntersectionPoint(), sourceVector);
 
-                    for (size_t j = 0; j < m_modelList[i]->size(); j++) {
-                        Intersection* lightObjectIntersection = m_modelList[i]->at(j)->intersect(lightSourceRay);
+                        for (size_t j = 0; j < m_modelList[i]->size(); j++) {
+                            Intersection* lightObjectIntersection = m_modelList[i]->at(j)->intersect(lightSourceRay);
 
-                        if (lightObjectIntersection != nullptr) {
-                            isShadow = true;
-                            delete lightObjectIntersection;
-                            delete lightSourceRay;
-                            goto objectInShadow;
+                            if (lightObjectIntersection != nullptr) {
+                                light->setIsInShadow(true);
+                                delete lightObjectIntersection;
+                                delete lightSourceRay;
+                                break;
+                            }
                         }
 
-                        delete lightObjectIntersection;
+                        delete lightSourceRay;
                     }
-
-                    delete lightSourceRay;
                 }
             }
 
-        objectInShadow:
-            if (!isShadow) {
-                closestIntersection->setLightSources(m_lightSourceList);
-            }
+            closestIntersection->setLightSources(m_lightSourceList);
 
             closestObjectRadiance = closestObject->getIlluminationModel()->illuminate(closestIntersection);
             closestObjectRadiance.scaleRadiance(

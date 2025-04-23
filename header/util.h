@@ -10,4 +10,6 @@ Vector findTransmission(Vector incoming, Vector normal, float index1, float inde
 
 float randomBetweenInclusive(float upperBound);
 
+float sign(float flo);
+
 #endif

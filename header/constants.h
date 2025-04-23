@@ -21,7 +21,7 @@ const float BACKGROUND_RADIANCE_GREEN = 60.39;
 const float BACKGROUND_RADIANCE_BLUE = 95.29;
 
 // Tone Reproduction
-const int WHICH_TONE_REPRODUCTION = 1;
+const int WHICH_TONE_REPRODUCTION = 0;
 const bool REINHARD_USE_LOG_AVERAGE = false;
 const bool REINHARD_USE_USER_CONSTANT = true;
 const float MAXIMUM_IRRADIANCE = 100.0;
@@ -37,7 +37,7 @@ const float INDEX_REFRACTION_AIR = 1.0f;
 const bool SUPERSAMPLING = true;
 
 // KD-Tree Stuff
-const bool USE_KD_TREES = true;
+const bool USE_KD_TREES = false;
 const bool USE_SURFACE_AREA_HEURISTIC = true;
 const bool IGNORE_MIN_SPLIT_PLANE = true;
 const float COST_OF_TRAVERSAL = 1.0f;
